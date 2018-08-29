@@ -6,7 +6,7 @@ let adminApp = require('./routes/admin/index')
 
 // main app declaration
 const app = express()
-app.use(vhost('api.localhost', adminApp))
+app.use(vhost('www.huehehe.uphapp.herokuapp.com', adminApp))
 app.use(vhost('localhost', adminApp))
 
 const PORT = process.env.PORT || 8080
