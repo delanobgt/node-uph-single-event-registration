@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "serve": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,8 +18,12 @@
     "express-session": "^1.15.6",
     "method-override": "^2.3.10",
     "mongoose": "^5.0.10",
+    "npm": "^6.4.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
   }
 }

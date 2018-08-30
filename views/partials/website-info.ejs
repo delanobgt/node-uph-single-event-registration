@@ -1,0 +1,55 @@
+<div id="div_website_info" class="row">
+  <h2 class="center-align">Website Info</h2>
+
+  <form id="form_website_info" class="col s12" method="POST">
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+          bem-registration.herokuapp.com/
+          <div class="input-field inline">
+            <input id="txt_sub_route" type="text" class="validate" value="<%= event.displayRoute %>" required>
+            <label for="txt_sub_route">Sub Route</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12 m10 offset-m1 l8 offset-l2">
+          <!-- <i class="material-icons prefix">account_circle</i> -->
+          <input id="txt_event_name" type="text" class="validate" value="<%= event.name %>" required>
+          <label for="txt_event_name">Event Name</label>
+          <span class="helper-text" data-error="" data-success="">The complete name of your event</span>
+        </div>
+      </div>
+      <div class="row center-align col s12 m10 offset-m1 l8 offset-l2">
+        <button id="btn_save_website_info" type="submit" class="waves-effect waves-light btn" style="width:100%;">SAVE</button>
+      </div>
+    </div>
+  </form>
+
+  <script>
+    (function () {
+      let $this = $('#div_website_info')
+      let $eventName = $this.find('#txt_event_name')
+      let $displayRoute = $this.find('#txt_sub_route')
+      let oldEventName = $eventName.val()
+      let oldDisplayRoute = $displayRoute.val()
+
+      $this.find('#form_website_info').submit(async function (event) {
+        event.preventDefault()
+        try {
+          newEventName = $eventName.val()
+          newDisplayRoute = $displayRoute.val()
+          await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
+            name: newEventName,
+            displayRoute: newDisplayRoute
+          })
+          oldEventName = newEventName
+          oldDisplayRoute = newDisplayRoute
+        } catch (err) {
+          console.log(err)
+          M.toast({html: err.responseJSON.msg}, { displayLength: 2000 })
+        }
+      })
+    })()
+  </script>
+</div>

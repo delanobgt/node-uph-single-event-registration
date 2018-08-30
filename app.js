@@ -44,13 +44,13 @@ app.use(passport.session())
 app.use((req, res, next) => {
   res.locals.info = req.flash('info')
   res.locals.error = req.flash('error')
-  console.log(req.user)
+  // console.log(req.user)
   next()
 })
 
 // index
-app.get('/', auth.isLoggedIn, (req, res) => {
-  res.render('admin/index')
+app.get('/', (req, res) => {
+  res.redirect('/end-user')
 })
 
 // other routes
@@ -58,8 +58,14 @@ app.use('/admin', require('./routes/admin/index'))
 app.use('/end-user', require('./routes/end-user/index'))
 
 // not found routes
-app.get('*', auth.isLoggedIn, (req, res) => {
+app.get('*', (req, res) => {
   res.redirect('/')
 })
 
-module.exports = app
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
+  console.log()
+  console.log(`Server listening on port ${PORT}.`)
+  console.log('Ctrl + C to exit.')
+  console.log()
+})
