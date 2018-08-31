@@ -1,5 +1,6 @@
 let express = require('express')
 let router = express.Router()
+let moment = require('moment')
 
 let auth = require('../../middlewares/auth')
 let db = require('../../models/index')
@@ -30,7 +31,6 @@ router.get('/event/:id', async (req, res) => {
 
 router.put('/api/event/:id', async (req, res) => {
   let id = req.params.id
-  console.log(req.body)
   try {
     let event = await db.Event.findById(id)
     let eventCols = Object.keys(db.Event.schema.tree).filter(name => !['id', '_id', '__v'].includes(name))
@@ -39,6 +39,8 @@ router.put('/api/event/:id', async (req, res) => {
         if (key === 'priceRanges') {
           if (req.body[key] == 'delete') event.priceRanges = []
           else event.priceRanges = req.body[key]
+        } else if (key === 'closeDate' || key === 'openDate') {
+          event[key] = moment(req.body[key], 'YYYY-MM-DDHHmm').toDate()
         } else {
           event[key] = req.body[key]
         }

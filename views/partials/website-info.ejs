@@ -1,8 +1,15 @@
 <div id="div_website_info" class="row">
   <h2 class="center-align">Website Info</h2>
 
+  <style>
+    #form_website_info .divider {
+      margin: 1.5em 0;
+    }
+  </style>
+
   <form id="form_website_info" class="col s12" method="POST">
     <div class="container">
+      <div class="divider"></div>
       <div class="row">
         <div class="col s12 m10 offset-m1 l8 offset-l2">
           bem-registration.herokuapp.com/
@@ -12,12 +19,42 @@
           </div>
         </div>
       </div>
+      <div class="divider"></div>
       <div class="row">
         <div class="input-field col s12 m10 offset-m1 l8 offset-l2">
           <!-- <i class="material-icons prefix">account_circle</i> -->
           <input id="txt_event_name" type="text" class="validate" value="<%= event.name %>" required>
-          <label for="txt_event_name">Event Name</label>
+          <label for="txt_event_name">Event Name (Tab Title)</label>
           <span class="helper-text" data-error="" data-success="">The complete name of your event</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="row">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+          <h5>Open Date</h5>
+          <div class="row">
+            <div class="input-field col s6">
+              <input id="txt_open_date" type="text" class="validate datepicker" value="<%= moment(event.openDate).format('DD-MM-YYYY') %>" required>
+              <label for="txt_open_date">Date</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="txt_open_time" type="text" class="validate timepicker" value="<%= moment(event.openDate).format('HH:mm') %>" required>
+              <label for="txt_open_time">Time</label>
+            </div>
+          </div>
+        </div>
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+          <h5>Close Date</h5>
+          <div class="row">
+            <div class="input-field col s6">
+              <input id="txt_close_date" type="text" class="validate datepicker" value="<%= moment(event.closeDate).format('DD-MM-YYYY') %>" required>
+              <label for="txt_close_date">Date</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="txt_close_time" type="text" class="validate timepicker" value="<%= moment(event.closeDate).format('HH:mm') %>" required>
+              <label for="txt_close_time">Time</label>
+            </div>
+          </div>
         </div>
       </div>
       <div class="row center-align col s12 m10 offset-m1 l8 offset-l2">
@@ -27,25 +64,53 @@
   </form>
 
   <script>
-    (function () {
+    $(document).ready(function () {
       let $this = $('#div_website_info')
       let $eventName = $this.find('#txt_event_name')
       let $displayRoute = $this.find('#txt_sub_route')
-      let oldEventName = $eventName.val()
-      let oldDisplayRoute = $displayRoute.val()
+
+      let openDatePicker = M.Datepicker.init(
+        document.querySelector('#txt_open_date'), { 
+          autoClose: true, 
+          format: 'dd-mm-yyyy', 
+          onOpen: function() {
+            console.log('lol')
+            openDatePicker.gotoDate(moment($(openDatePicker.$el).val(), 'DD-MM-YYYY').toDate())
+            openDatePicker.setDate(moment($(openDatePicker.$el).val(), 'DD-MM-YYYY').toDate())
+          }})
+      let openTimePicker = M.Timepicker.init(
+        document.querySelector('#txt_open_time'), 
+        { autoClose: true, twelveHour: false })
+      let closeDatePicker = M.Datepicker.init(
+        document.querySelector('#txt_close_date'), { 
+          autoClose: true, 
+          format: 'dd-mm-yyyy', 
+          onOpen: function() {
+            closeDatePicker.gotoDate(moment($(closeDatePicker.$el).val(), 'DD-MM-YYYY').toDate())
+            closeDatePicker.setDate(moment($(closeDatePicker.$el).val(), 'DD-MM-YYYY').toDate())
+          }})
+      let closeTimePicker = M.Timepicker.init(
+        document.querySelector('#txt_close_time'), 
+        { autoClose: true, twelveHour: false })
 
       $this.find('#form_website_info').submit(async function (event) {
         event.preventDefault()
+
+        let openDate = moment(
+          $(openDatePicker.$el).val() + $(openTimePicker.$el).val(),
+          'DD-MM-YYYYhh:mm')
+        let closeDate = moment(
+          $(closeDatePicker.$el).val() + $(closeTimePicker.$el).val(),
+          'DD-MM-YYYYhh:mm')
+        
         try {
           let $toast = $(M.toast({html: 'Saving...'}, { displayLength: 9999999999 }).el)
-          newEventName = $eventName.val()
-          newDisplayRoute = $displayRoute.val()
           await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
-            name: newEventName,
-            displayRoute: newDisplayRoute
+            name: $eventName.val(),
+            displayRoute: $displayRoute.val(),
+            openDate: openDate.format('YYYY-MM-DDHHmm'),
+            closeDate: closeDate.format('YYYY-MM-DDHHmm')
           })
-          oldEventName = newEventName
-          oldDisplayRoute = newDisplayRoute
           $toast.fadeOut('slow')
           M.toast({html: 'Website Info updated'}, { displayLength: 2000 })
         } catch (err) {
@@ -53,6 +118,6 @@
           M.toast({html: err.responseJSON.msg}, { displayLength: 2000 })
         }
       })
-    })()
+    })
   </script>
 </div>

@@ -44,6 +44,7 @@ app.use(passport.session())
 app.use((req, res, next) => {
   res.locals.info = req.flash('info')
   res.locals.error = req.flash('error')
+  res.locals.moment = require('moment')
   // console.log(req.user)
   next()
 })

@@ -29,6 +29,7 @@
               <span>Free</span>
             </label>
           </p>
+          <div class="divider"></div>
           <p>
             <label>
               <input id="radio_paid" class="with-gap" name="group1" type="radio" />
@@ -82,6 +83,10 @@
           $this.find('input[type=number]').attr('required', false)
           $divPaid.hide()
         }
+      })
+
+      $divPaid.on('blur', '.price', function () {
+        // $(this).val(Number($(this).val()).toLocaleString())
       })
 
       // radio button

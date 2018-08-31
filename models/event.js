@@ -9,6 +9,8 @@ let EventSchema = new mongoose.Schema({
   }],
   title: String,
   desc: String,
+  openDate: Date,
+  closeDate: Date
 })
 
 
