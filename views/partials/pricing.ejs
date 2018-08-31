@@ -1,0 +1,155 @@
+<div id="div_pricing" class="row">
+  
+  <style>
+    #form_pricing .input-field {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .delete-range {
+      opacity: 0.5;
+      border-radius: 100%;
+      background: lightgray;
+      margin-left: 0.5em;
+      cursor: pointer;
+    }
+    .delete-range {
+      opacity: 1;
+    }
+  </style>
+
+  <h2 class="center-align">Pricing</h2>
+
+  <form id="form_pricing" class="col s12" method="POST" action="">
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+          <p>
+            <label>
+              <input id="radio_free" class="with-gap" name="group1" type="radio" />
+              <span>Free</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input id="radio_paid" class="with-gap" name="group1" type="radio" />
+              <span>Paid</span>
+            </label>
+          </p>
+        </div>
+      </div>
+      <div id="div_paid" class="row">
+        <% if (event.priceRanges) { %>
+          <% for (let priceRange of event.priceRanges) { %>
+            <div class="input-field col s12 m10 offset-m1 l8 offset-l2">
+              The next
+              <div class="input-field inline">
+                <input type="number" class="peopleCount validate" value="<%= priceRange.peopleCount %>" min="1" required style="width:50px; text-align:center;">
+              </div>
+              people get a price of Rp. 
+              <div class="input-field inline">
+                <input type="number" class="price validate" value="<%= priceRange.price %>" min="0" required style="width:150px; text-align:center;">
+              </div>
+              <i class="delete-range material-icons">close</i>
+            </div>
+          <% } %>
+        <% } %>
+        <div class="row col s12 m10 offset-m1 l8 offset-l2">
+          <button id="btn_add_range" type="button" class="btn-floating btn-large waves-effect waves-light right"><i class="material-icons">add</i></button>
+        </div>
+      </div>
+
+      <div class="row center-align col s12 m10 offset-m1 l8 offset-l2">
+        <button id="btn_save_pricing" type="submit" class="waves-effect waves-light btn" style="width:100%;">SAVE</button>
+      </div>
+    </div>
+  </form>
+
+  <script>
+    (function () {
+      let $this = $('#div_pricing')
+      let $divPaid = $this.find('#div_paid')
+
+      // init form
+      $(document).ready(function () {
+        if (<%= event.priceRanges.length %>) {
+          $this.find('input[type=radio]:eq(0)').prop('checked', false)
+          $this.find('input[type=radio]:eq(1)').prop('checked', true)
+          $this.find('input[type=number]').attr('required', true)
+          $divPaid.show()
+        } else {
+          $this.find('input[type=radio]:eq(0)').prop('checked', true)
+          $this.find('input[type=radio]:eq(1)').prop('checked', false)
+          $this.find('input[type=number]').attr('required', false)
+          $divPaid.hide()
+        }
+      })
+
+      // radio button
+      $this.find('input[type=radio]').change(function () {
+        let typeOfRadio = $(this).siblings('span').text()
+        switch (typeOfRadio) {
+          case 'Free':
+            $divPaid.hide()
+            $this.find('input[type=number]').attr('required', false)
+            break
+          case 'Paid':
+            $divPaid.show()
+            $this.find('input[type=number]').attr('required', true)
+            break
+          default:
+            console.log('switch default')
+        }
+      })
+
+      // add new range
+      $this.find('#btn_add_range').click(function () {
+        $(`
+          <div class="input-field col s12 m10 offset-m1 l8 offset-l2">
+            The next
+            <div class="input-field inline">
+              <input type="number" class="peopleCount validate" value="<%= 0 %>" min="1" required style="width:50px; text-align:center;">
+            </div>
+            people get a price of Rp. 
+            <div class="input-field inline">
+              <input type="number" class="price validate" value="<%= 0 %>" min="0" required style="width:150px; text-align:center;">
+            </div>
+            <i class="delete-range material-icons">close</i>
+          </div>
+        `).insertBefore($(this).parent())
+      })
+
+      // delete range
+      $divPaid.on('click', '.delete-range', function () {
+        $(this).parent().remove()
+      })
+
+      // form submit
+      $this.find('#form_pricing').submit(async function (event) {
+        event.preventDefault()
+
+        try {
+          let priceRanges = 'delete'
+          if ($('#radio_paid').prop('checked')) {
+            priceRanges = []
+            $divPaid.children('.input-field').each(function () {
+              priceRanges.push({ 
+                peopleCount: $(this).find('.peopleCount').val(),
+                price: $(this).find('.price').val()
+              })
+            })
+          }
+
+          let $toast = $(M.toast({html: 'Saving...'}, { displayLength: 9999999999 }).el)
+          await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
+            priceRanges: priceRanges
+          })
+          $toast.fadeOut('slow')
+          M.toast({html: 'Pricing updated'}, { displayLength: 2000 })
+        } catch (err) {
+          console.log(err)
+          M.toast({html: err.responseJSON.msg}, { displayLength: 2000 })
+        }
+      })
+    })()
+  </script>
+</div>

@@ -37,6 +37,7 @@
       $this.find('#form_website_info').submit(async function (event) {
         event.preventDefault()
         try {
+          let $toast = $(M.toast({html: 'Saving...'}, { displayLength: 9999999999 }).el)
           newEventName = $eventName.val()
           newDisplayRoute = $displayRoute.val()
           await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
@@ -45,6 +46,8 @@
           })
           oldEventName = newEventName
           oldDisplayRoute = newDisplayRoute
+          $toast.fadeOut('slow')
+          M.toast({html: 'Website Info updated'}, { displayLength: 2000 })
         } catch (err) {
           console.log(err)
           M.toast({html: err.responseJSON.msg}, { displayLength: 2000 })

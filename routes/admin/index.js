@@ -30,14 +30,24 @@ router.get('/event/:id', async (req, res) => {
 
 router.put('/api/event/:id', async (req, res) => {
   let id = req.params.id
+  console.log(req.body)
   try {
     let event = await db.Event.findById(id)
-    for (let key in req.body) {
-      event[key] = req.body[key]
+    let eventCols = Object.keys(db.Event.schema.tree).filter(name => !['id', '_id', '__v'].includes(name))
+    for (let key of eventCols) {
+      if (req.body[key]) {
+        if (key === 'priceRanges') {
+          if (req.body[key] == 'delete') event.priceRanges = []
+          else event.priceRanges = req.body[key]
+        } else {
+          event[key] = req.body[key]
+        }
+      }
     }
     await event.save()
     res.json(event)
   } catch (err) {
+    console.log(err)
     res.status(404).json({ msg: 'Failed to update Event'})
   }
 })
