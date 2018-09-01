@@ -14,7 +14,18 @@ let EventSchema = new mongoose.Schema({
   title: String,
   desc: String,
   openDate: Date,
-  closeDate: Date
+  closeDate: Date,
+  formSchema: [{
+    inputType: {
+      type: String,
+      enum : ['number', 'text', 'email']
+    },
+    label: String
+  }],
+  forms: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Form' 
+  }]
 })
 
 
