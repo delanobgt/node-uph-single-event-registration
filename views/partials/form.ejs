@@ -1,0 +1,148 @@
+<div id="div_form" class="row">
+  
+  <style>
+    #form_form * {
+      box-sizing: border-box;
+    }
+    #form_form .input-field {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .delete-icon, .move-up-icon, .move-down-icon {
+      opacity: 0.5;
+      border-radius: 100%;
+      background: lightgray;
+      margin-left: 0.1em;
+      cursor: pointer;
+    }
+    #form_form .btn-floating {
+      margin: 0 0.2em;
+    }
+  </style>
+
+  <h2 class="center-align">Form</h2>
+
+  <form id="form_form" class="col s12" method="POST" action="">
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+          
+        </div>
+      </div>
+      <div id="div_field" class="row">
+        <div class="input-field col s12 m8 offset-m2 l6 offset-l3">
+          <input type="text" class="validate" value="Student ID" disabled>
+          <label>Mandatory Field</label>
+          <div class="row"></div>
+        </div>
+        <div class="input-field col s12 m8 offset-m2 l6 offset-l3">
+          <input type="text" class="validate" value="Full Name" disabled>
+          <label>Mandatory Field</label>
+          <div class="row"></div>
+        </div>
+        <div class="input-field col s12 m8 offset-m2 l6 offset-l3">
+          <input type="text" class="validate" value="Study Program" disabled>
+          <label>Mandatory Field</label>
+          <div class="row"></div>
+        </div>
+
+        <div class="col s12 m8 offset-m2 l6 offset-l3">
+          <div class="right" style="margin:0.8em 0;">
+            <button id="btn_add_text" type="button" class="btn-floating btn-large waves-effect waves-light ">
+              <i class="material-icons">text_format</i>
+            </button>
+            <button id="btn_add_number" type="button" class="btn-floating btn-large waves-effect waves-light ">
+              0
+            </button>
+            <button id="btn_add_email" type="button" class="btn-floating btn-large waves-effect waves-light ">
+              <i class="material-icons">email</i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row center-align col s12 m10 offset-m1 l8 offset-l2">
+        <button id="btn_save_form" type="submit" class="waves-effect waves-light btn" style="width:100%;">SAVE</button>
+      </div>
+    </div>
+  </form>
+
+  <script>
+    (function () {
+      let $this = $('#div_form')
+      let $divField = $this.find('#div_field')
+
+      // init form
+      $(document).ready(function () {
+        
+
+
+      })
+
+      // add new range
+      $this.find('.btn-floating').click(function () {
+        let type
+        if ($(this).attr('id') === 'btn_add_text') {
+          type = 'text'
+        } else if ($(this).attr('id') === 'btn_add_number') {
+          type = 'number'
+        } else if ($(this).attr('id') === 'btn_add_email') {
+          type = 'email'
+        }
+        $(`
+          <div class="field input-field col s12 m8 offset-m2 l6 offset-l3">
+            <input type="text" class="validate">
+            <label>[${type.toUpperCase()}] Please specify the label of this input</label>
+            <div class="right">
+              <i class="move-up-icon material-icons">keyboard_arrow_up</i>
+              <i class="move-down-icon material-icons">keyboard_arrow_down</i>
+              <i class="delete-icon material-icons">close</i>
+            </div>
+          </div>
+        `).hide(0).insertBefore($(this).parent().parent()).slideDown('slow')
+      })
+
+      // delete field
+      $divField.on('click', '.delete-icon', function () {
+        $(this).parent().parent().slideUp('slow', function() { $(this).remove() })
+      })
+      // move field up
+      $divField.on('click', '.move-up-icon', function () {
+        let $component = $(this).parent().parent()
+        let $prev = $component.prev('.field')
+        if ($prev.length) {
+          $component.slideUp('fast', function() {
+            $(this).insertBefore($prev)
+            $(this).slideDown('slow') })
+        }
+      })
+      // move field down
+      $divField.on('click', '.move-down-icon', function () {
+        let $component = $(this).parent().parent()
+        let $next = $component.next('.field')
+        if ($next.length) {
+          $component.slideUp('fast', function() {
+            $(this).insertAfter($next)
+            $(this).slideDown('slow') })
+        }
+      })
+
+      // form submit
+      $this.find('#form_form').submit(async function (event) {
+        event.preventDefault()
+
+        try {
+          let $toast = $(M.toast({html: 'Saving...'}, { displayLength: 9999999999 }).el)
+          // await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
+          //   priceRanges: priceRanges
+          // })
+          $toast.fadeOut('slow')
+          M.toast({html: 'Form updated'}, { displayLength: 2000 })
+        } catch (err) {
+          console.log(err)
+          M.toast({html: err.responseJSON.msg}, { displayLength: 2000 })
+        }
+      })
+    })()
+  </script>
+</div>

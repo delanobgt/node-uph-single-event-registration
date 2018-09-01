@@ -120,12 +120,12 @@
             </div>
             <i class="delete-range material-icons">close</i>
           </div>
-        `).insertBefore($(this).parent())
+        `).hide(0).insertBefore($(this).parent()).slideDown('slow')
       })
 
       // delete range
       $divPaid.on('click', '.delete-range', function () {
-        $(this).parent().remove()
+        $(this).parent().slideUp('slow', function() { $(this).remove() })
       })
 
       // form submit

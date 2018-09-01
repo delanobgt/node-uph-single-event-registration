@@ -8,4 +8,4 @@ mongoose.connect(DATABASE_URL)
 
 module.exports.User = require('./user')
 module.exports.Event = require('./event')
-// module.exports.Form = require('./form')
+module.exports.Form = require('./form')
