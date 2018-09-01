@@ -31,17 +31,17 @@
       </div>
       <div id="div_field" class="row">
         <div class="input-field col s12 m8 offset-m2 l6 offset-l3">
-          <input type="text" class="validate" value="Student ID" disabled>
+          <input type="text" class="validate" value="Student ID" disabled required>
           <label>Mandatory Field</label>
           <div class="row"></div>
         </div>
         <div class="input-field col s12 m8 offset-m2 l6 offset-l3">
-          <input type="text" class="validate" value="Full Name" disabled>
+          <input type="text" class="validate" value="Full Name" disabled required>
           <label>Mandatory Field</label>
           <div class="row"></div>
         </div>
         <div class="input-field col s12 m8 offset-m2 l6 offset-l3">
-          <input type="text" class="validate" value="Study Program" disabled>
+          <input type="text" class="validate" value="Study Program" disabled required>
           <label>Mandatory Field</label>
           <div class="row"></div>
         </div>
@@ -72,14 +72,7 @@
       let $this = $('#div_form')
       let $divField = $this.find('#div_field')
 
-      // init form
-      $(document).ready(function () {
-        
-
-
-      })
-
-      // add new range
+      // add new field
       $this.find('.btn-floating').click(function () {
         let type
         if ($(this).attr('id') === 'btn_add_text') {
@@ -91,7 +84,7 @@
         }
         $(`
           <div class="field input-field col s12 m8 offset-m2 l6 offset-l3">
-            <input type="text" class="validate">
+            <input type="text" class="validate" required>
             <label>[${type.toUpperCase()}] Please specify the label of this input</label>
             <div class="right">
               <i class="move-up-icon material-icons">keyboard_arrow_up</i>
@@ -99,7 +92,7 @@
               <i class="delete-icon material-icons">close</i>
             </div>
           </div>
-        `).hide(0).insertBefore($(this).parent().parent()).slideDown('slow')
+        `).hide(0).insertBefore($(this).parent().parent()).slideDown('slow')[0].inputType = type
       })
 
       // delete field
@@ -133,9 +126,22 @@
 
         try {
           let $toast = $(M.toast({html: 'Saving...'}, { displayLength: 9999999999 }).el)
-          // await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
-          //   priceRanges: priceRanges
-          // })
+
+          let formSchema = 'delete'
+          let $fields = $('.field')
+          if ($fields.length) {
+            formSchema = []
+            $fields.each(function () {
+              formSchema.push({
+                inputType: this.inputType,
+                label: $(this).find('input[type=text]').val()
+              })
+            })
+          }
+
+          await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
+            formSchema: formSchema
+          })
           $toast.fadeOut('slow')
           M.toast({html: 'Form updated'}, { displayLength: 2000 })
         } catch (err) {

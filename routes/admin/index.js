@@ -40,10 +40,10 @@ router.put('/api/event/:id', async (req, res) => {
     let eventCols = Object.keys(db.Event.schema.tree).filter(name => !['id', '_id', '__v'].includes(name))
     for (let key of eventCols) {
       if (req.body[key]) {
-        if (key === 'priceRanges') {
-          if (req.body[key] == 'delete') event.priceRanges = []
-          else event.priceRanges = req.body[key]
-        } else if (key === 'closeDate' || key === 'openDate') {
+        if (['formSchema', 'priceRanges'].includes(key)) {
+          if (req.body[key] == 'delete') event[key] = []
+          else event[key] = req.body[key]
+        } else if (['closeDate', 'openDate'].includes(key)) {
           event[key] = moment(req.body[key], 'YYYY-MM-DDHHmm').toDate()
         } else {
           event[key] = req.body[key]
