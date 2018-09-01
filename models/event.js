@@ -7,6 +7,10 @@ let EventSchema = new mongoose.Schema({
     peopleCount: Number,
     price: Number
   }],
+  mainImage: {
+    public_id: String,
+    secure_url: String
+  },
   title: String,
   desc: String,
   openDate: Date,

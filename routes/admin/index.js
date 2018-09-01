@@ -1,7 +1,9 @@
 let express = require('express')
 let router = express.Router()
 let moment = require('moment')
+let cloudinary = require('cloudinary')
 
+let upload = require('../../middlewares/upload')
 let auth = require('../../middlewares/auth')
 let db = require('../../models/index')
 
@@ -13,7 +15,8 @@ router.get('/', async (req, res) => {
 router.get('/event/:id', async (req, res) => {
   let id = req.params.id
   let event = await db.Event.findById(id)
-  res.render('admin/event-detail', { event })
+  let showImage = parseInt(req.query.showImage || '0')
+  res.render('admin/event-detail', { event, showImage })
 })
 
 // db.Event.remove({}, () => {
@@ -30,6 +33,7 @@ router.get('/event/:id', async (req, res) => {
 // })
 
 router.put('/api/event/:id', async (req, res) => {
+  console.log(req.body)
   let id = req.params.id
   try {
     let event = await db.Event.findById(id)
@@ -51,6 +55,22 @@ router.put('/api/event/:id', async (req, res) => {
   } catch (err) {
     console.log(err)
     res.status(404).json({ msg: 'Failed to update Event'})
+  }
+})
+
+router.put('/event/:id/image', upload.single('image'), async (req, res) => {
+  let id = req.params.id
+  try {
+    let event = await db.Event.findById(id)
+    await cloudinary.uploader.destroy(event.mainImage.public_id)
+    let uploadResult = await cloudinary.uploader.upload(req.file.path)
+    event.mainImage.public_id = uploadResult.public_id
+    event.mainImage.secure_url = uploadResult.secure_url
+    await event.save()
+    res.redirect(`/admin/event/${id}?showImage=${1}`)
+  } catch (err) {
+    console.log(err)
+    res.redirect('back')
   }
 })
 
