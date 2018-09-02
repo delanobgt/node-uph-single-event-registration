@@ -1,0 +1,7 @@
+<% if (status === 'PENDING') { %>
+    Congrats, you got seat ke-<%= pos %>
+<% } else if (status === 'QUEUE') { %>
+    Phew, at least you made it to the waiting list, you are ke-<%= pos %>
+<% } else if (status === 'INELIGIBLE') { %>
+    Too late! You are ineligible for this event
+<% } %>

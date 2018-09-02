@@ -1,6 +1,9 @@
 <div id="div_pricing" class="row">
   
   <style>
+    #form_pricing .divider {
+      margin: 2em 0;
+    }
     #form_pricing .input-field {
       margin-top: 0;
       margin-bottom: 0;
@@ -22,6 +25,20 @@
   <form id="form_pricing" class="col s12" method="POST" action="">
     <div class="container">
       <div class="row">
+        <div class="input-field col s12 m10 offset-m1 l8 offset-l2">
+          <input id="num_seat" type="number" class="validate" value="<%= event.seatCount %>" required>
+          <label for="num_seat">Number of Seat</label>
+          <span class="helper-text" data-error="" data-success="">The maximum number of available seats.</span>
+          <div class="divider"></div>
+        </div>
+        <div class="input-field col s12 m10 offset-m1 l8 offset-l2">
+          <input id="num_queue" type="number" class="validate" value="<%= event.queueCount %>" required>
+          <label for="num_queue">Number of Queue</label>
+          <span class="helper-text" data-error="" data-success="">The maximum queue length.</span>
+          <div class="divider"></div>
+        </div>
+      </div>
+      <div class="row">
         <div class="col s12 m10 offset-m1 l8 offset-l2">
           <p>
             <label>
@@ -29,7 +46,6 @@
               <span>Free</span>
             </label>
           </p>
-          <div class="divider"></div>
           <p>
             <label>
               <input id="radio_paid" class="with-gap" name="group1" type="radio" />
@@ -146,7 +162,9 @@
 
           let $toast = $(M.toast({html: 'Saving...'}, { displayLength: 9999999999 }).el)
           await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
-            priceRanges: priceRanges
+            priceRanges: priceRanges,
+            seatCount: parseInt($('#num_seat').val()),
+            queueCount: parseInt($('#num_queue').val())
           })
           $toast.fadeOut('slow')
           M.toast({html: 'Pricing updated'}, { displayLength: 2000 })

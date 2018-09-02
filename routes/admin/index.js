@@ -33,6 +33,7 @@ router.get('/event/:id', async (req, res) => {
 // })
 
 router.put('/api/event/:id', async (req, res) => {
+  console.log(req.body)
   let id = req.params.id
   try {
     let event = await db.Event.findById(id)
@@ -44,6 +45,8 @@ router.put('/api/event/:id', async (req, res) => {
           else event[key] = req.body[key]
         } else if (['closeDate', 'openDate'].includes(key)) {
           event[key] = moment(req.body[key], 'YYYY-MM-DDHHmm').toDate()
+        } else if (['seatCount'].includes(key)) {
+          event[key] = parseInt(req.body[key])
         } else {
           event[key] = req.body[key]
         }

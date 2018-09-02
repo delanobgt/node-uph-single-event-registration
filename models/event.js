@@ -6,6 +6,8 @@ let EventSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
+  seatCount: Number,
+  queueCount: Number,
   priceRanges: [{
     peopleCount: Number,
     price: Number
