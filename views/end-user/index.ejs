@@ -1,5 +1,112 @@
-Welcome
+<!DOCTYPE html>
+<html>
 
-<%= event %>
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+  <link rel="stylesheet" href="stylesheets/end-user/index.css">
+  <link rel="icon" type="image/jpg" href="http://indonesiakreatif.bekraf.go.id/ikpro/wp-content/uploads/2013/11/logo_uph.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= event.name %></title>
+</head>
 
-<img src="<%= event.mainImage.secure_url %>">
+<body>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
+
+  <div class="carousel carousel-slider center">
+    <div class="carousel-item white-text" href="#four!">
+      <img src="<%= event.mainImage.secure_url %>">
+      <h2>Fourth Panel</h2>
+      <p class="white-text">This is your fourth panel</p>
+    </div>
+    <div class="carousel-fixed-item center">
+      <a class="btn waves-effect white grey-text darken-text-2" href="sing_up">SIGN UP</a>
+    </div>
+  </div>
+
+  <div class="row center-align">
+    <h1><%= event.title %></h1>
+    <p><%= event.desc %></p>
+  </div>
+
+  <div class="row cyan center-align">
+    <% if (!event.priceRanges.length) { %>
+      <div>
+        <h1>It's Freeeeee</h1>
+      </div>
+    <% } else { %>
+      <div>
+        <h1>Price Ranges</h1>
+        <div class="container">
+          <div class="row">
+            <% let curPeopleCount = 0 %>
+            <% for (let priceRange of event.priceRanges) { %>
+              <p class="col s6">
+                <%= curPeopleCount + 1 %> - <%= curPeopleCount + priceRange.peopleCount %>
+              </p>
+              <p class="col s6">
+                Rp. <%= priceRange.price.toLocaleString() %>
+              </p>
+              <% curPeopleCount += priceRange.peopleCount %>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="form">
+    <form action="/end-user/event/<%= event._id %>/form" method="POST">
+      <div class="container">
+        <div class="row">
+          <h2 class="center-align">SIGN UP NOW!</h2>
+
+          <div class="input-field col s8 offset-s2 m6 offset-m3 l4 offset-l4">  
+            <input type="number" name="Student ID" class="validate" required>
+            <label>Student ID</label>
+          </div>
+          <div class="input-field col s8 offset-s2 m6 offset-m3 l4 offset-l4">  
+            <input type="text" name="Full Name" class="validate" disabled required>
+            <label>Full Name (Autofill)</label>
+          </div>
+          <div class="input-field col s8 offset-s2 m6 offset-m3 l4 offset-l4">  
+            <input type="text" name="Study Program" class="validate" disabled required>
+            <label>Study Program (Autofill)</label>
+          </div>
+
+          <% for (let field of event.formSchema) { %>
+            <div class="input-field col s8 offset-s2 m6 offset-m3 l4 offset-l4">  
+              <input type="<%= field.inputType %>" name="<%= field.label %>" class="validate" required>
+              <label><%= field.label %></label>
+            </div>
+          <% } %>
+        </div>    
+        <div class="row center-align">
+          <button class="btn waves-effect waves-light" type="submit" name="submit">Submit
+            <i class="material-icons right">send</i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.core.js"></script>
+  <script>
+    $(document).ready(function () {
+      var elems = document.querySelectorAll('.carousel')
+      let carouselInstance = M.Carousel.init(elems, {
+        fullWidth: true,
+        indicators: true
+      })
+
+      $('input[name="Student ID"]').on('input', function() {
+        console.log('hahah')
+      })
+    })
+  </script>
+</body>
+
+</html>

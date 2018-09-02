@@ -33,7 +33,6 @@ router.get('/event/:id', async (req, res) => {
 // })
 
 router.put('/api/event/:id', async (req, res) => {
-  console.log(req.body)
   let id = req.params.id
   try {
     let event = await db.Event.findById(id)
