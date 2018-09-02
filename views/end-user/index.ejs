@@ -93,7 +93,7 @@
     </form>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.core.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.js"></script>
   <script>
     $(document).ready(function () {
       var elems = document.querySelectorAll('.carousel')
@@ -102,8 +102,45 @@
         indicators: true
       })
 
-      $('input[name="Student ID"]').on('input', function() {
-        console.log('hahah')
+      let updateMandatoryFields = _.debounce(async (studentID) => {
+        let $studentID = $('input[name="Student ID"]')
+        let $fullName = $('input[name="Full Name"]')
+        let $studyProgram = $('input[name="Study Program"]')
+
+        try {
+          $studentID.siblings('label').html('Student ID (Verifying..)')
+          let student = await $.get(`https://psi-uph-api.herokuapp.com/students/api/${studentID}`)
+          if (student) {
+            $studentID.siblings('label').html('Student ID <span class="blue-text">(Verified)</span>')
+            $fullName.siblings('label').addClass('active')
+            $fullName.val(student.name)
+            $studyProgram.siblings('label').addClass('active')
+            $studyProgram.val(student.study_program.name)
+            $('form')[0].isStudentIDValid = true
+          } else {
+            $studentID.siblings('label').html('Student ID <span class="red-text">(Not found)</span>')
+            $fullName.siblings('label').removeClass('active')
+            $fullName.val('')
+            $studyProgram.siblings('label').removeClass('active')
+            $studyProgram.val('')
+            $('form')[0].isStudentIDValid = false
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      }, 200)
+
+      $('input[name="Student ID"]').on('input', async function() {
+        $('form')[0].isStudentIDValid = false
+        let studentID = $(this).val()
+        updateMandatoryFields(studentID)
+      })
+
+      $('form').submit(function (event) {
+        if (!this.isStudentIDValid) {
+          event.preventDefault()
+          M.toast({html: 'invalid Student ID'}, { displayLength: 2000, classes: 'red'})
+        }
       })
     })
   </script>
