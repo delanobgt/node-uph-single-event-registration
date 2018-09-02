@@ -16,6 +16,8 @@ let methodOverride = require('method-override')
 let passport = require('passport')
 let flash = require('connect-flash')
 
+let db = require('./models/index')
+
 // custom middlewares import
 let auth = require('./middlewares/auth')
 
@@ -57,6 +59,17 @@ app.get('/', (req, res) => {
 // other routes
 app.use('/admin', require('./routes/admin/index'))
 app.use('/end-user', require('./routes/end-user/index'))
+
+app.get('/favicon.ico', (req, res) => {
+  res.status(404).send('')
+})
+
+app.get('/:displayRoute', async (req, res) => {
+  let displayRoute = req.params.displayRoute
+  let event = await db.Event.findOne({ displayRoute })
+  if (!event) res.redirect('/')
+  else res.redirect(`end-user/event/${event._id}`)
+})
 
 // not found routes
 app.get('*', (req, res) => {

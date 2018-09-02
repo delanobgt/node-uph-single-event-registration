@@ -29,6 +29,7 @@
           
         </div>
       </div>
+
       <div id="div_field" class="row">
         <div class="input-field col s12 m8 offset-m2 l6 offset-l3">
           <input type="text" class="validate" value="Student ID" disabled required>
@@ -45,6 +46,18 @@
           <label>Mandatory Field</label>
           <div class="row"></div>
         </div>
+
+        <% for (let field of event.formSchema) { %>
+          <div class="field input-field col s12 m8 offset-m2 l6 offset-l3">
+            <input type="text" class="validate" value="<%= field.label %>" required>
+            <label>[<%= field.inputType.toUpperCase() %>] Please specify the label of this input</label>
+            <div class="right">
+              <i class="move-up-icon material-icons">keyboard_arrow_up</i>
+              <i class="move-down-icon material-icons">keyboard_arrow_down</i>
+              <i class="delete-icon material-icons">close</i>
+            </div>
+          </div>
+        <% } %>
 
         <div class="col s12 m8 offset-m2 l6 offset-l3">
           <div class="right" style="margin:0.8em 0;">
@@ -92,7 +105,7 @@
               <i class="delete-icon material-icons">close</i>
             </div>
           </div>
-        `).hide(0).insertBefore($(this).parent().parent()).slideDown('slow')[0].inputType = type
+        `).hide(0).insertBefore($(this).parent().parent()).slideDown('slow')
       })
 
       // delete field
@@ -132,12 +145,15 @@
           if ($fields.length) {
             formSchema = []
             $fields.each(function () {
+              let inputType = $(this).find('label').text()
+              var regex = /^\[(\w+)\] .*$/g
               formSchema.push({
-                inputType: this.inputType,
+                inputType: regex.exec(inputType)[1].toLowerCase(),
                 label: $(this).find('input[type=text]').val()
               })
             })
           }
+          console.log(formSchema)
 
           await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
             formSchema: formSchema

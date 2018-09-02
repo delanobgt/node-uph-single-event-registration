@@ -2,7 +2,10 @@ let mongoose = require('mongoose')
 
 let EventSchema = new mongoose.Schema({
   name: String,
-  displayRoute: String,
+  displayRoute: {
+    type: String,
+    unique: true
+  },
   priceRanges: [{
     peopleCount: Number,
     price: Number
