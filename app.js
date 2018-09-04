@@ -15,6 +15,7 @@ let bodyParser = require('body-parser')
 let methodOverride = require('method-override')
 let passport = require('passport')
 let flash = require('connect-flash')
+let socket = require('socket.io')
 
 let db = require('./models/index')
 
@@ -23,10 +24,18 @@ let auth = require('./middlewares/auth')
 
 // main app declaration
 const app = express()
+const PORT = process.env.PORT || 3000
+const server = app.listen(PORT, () => {
+  console.log()
+  console.log(`Server listening on port ${PORT}.`)
+  console.log('Ctrl + C to exit.')
+  console.log()
+})
+
+const io = socket.listen(server)
 
 // view setup
 app.set('view engine', 'ejs')
-app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')))
 
 // applying middlewares
@@ -43,11 +52,12 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // applying custom middlewares
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.info = req.flash('info')
   res.locals.error = req.flash('error')
   res.locals.moment = require('moment')
   // console.log(req.user)
+  
   next()
 })
 
@@ -58,7 +68,7 @@ app.get('/', (req, res) => {
 
 // other routes
 app.use('/admin', require('./routes/admin/index'))
-app.use('/end-user', require('./routes/end-user/index'))
+app.use('/end-user', require('./routes/end-user/index')(io))
 
 app.get('/favicon.ico', (req, res) => {
   res.status(404).send('')
@@ -74,12 +84,4 @@ app.get('/:displayRoute', async (req, res) => {
 // not found routes
 app.get('*', (req, res) => {
   res.redirect('/')
-})
-
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-  console.log()
-  console.log(`Server listening on port ${PORT}.`)
-  console.log('Ctrl + C to exit.')
-  console.log()
 })

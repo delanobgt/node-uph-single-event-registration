@@ -1,0 +1,63 @@
+html,
+body {
+  background-color: #ffffff;
+  color: #555555;
+  font-family: 'Lato', 'Arial', sans-serif;
+  font-size: 20px;
+  font-weight: 300;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* ------------------------------ */
+/* FLOATING BUTTON */
+/* ------------------------------ */
+header .btn {
+  margin-top: 70vh;
+}
+
+.btn-floating {
+  position: fixed;
+  right: 5vw;
+  bottom: 5vh;
+}
+
+.section-price-free {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.712), rgb(0, 0, 0, 0.712)), url(../../images/starry_night.jpg);
+  background-size: cover;
+  background-position: center;
+}
+
+.section-title {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.712), rgb(0, 0, 0, 0.712)), url(../../images/landscape.jpg) !important;
+  background-size: cover;
+  height: 100vh;
+  background-position: center;
+}
+
+.section-title h1 {
+  margin-top: 20%;
+  margin-left: 20%;
+}
+
+.section-title p {
+  margin-left: 20%;
+}
+
+h2:after {
+  display: block;
+  height: 2px;
+  background-color: #e67e22;
+  content: " ";
+  width: 100px;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+
+.section-price-free .parallax-container h3 {
+  margin-top: 200px;
+}
+
+.list-footer-icon li {
+  display: inline-block;
+}

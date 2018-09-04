@@ -1,0 +1,23 @@
+.contact-form {
+  width: 60%;
+  margin: 0 auto;
+}
+
+*:focus {
+  outline: none;
+}
+
+.signtextbox {
+  text-align: center;
+  top: 50%;
+  font-size: 60%;
+  font-weight: 300;
+}
+
+p {
+  text-align: center;
+}
+
+.btn {
+  margin-top: 10% !important;
+}

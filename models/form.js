@@ -12,8 +12,8 @@ let FormSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['PENDING', 'ACCEPTED', 'REJECTED', 'QUEUE'],
-    default: 'QUEUE'
+    enum: ['PENDING', 'ACCEPTED', 'REJECTED', 'WAITING', 'CONFIRMATION'],
+    default: 'PENDING'
   }
 })
 

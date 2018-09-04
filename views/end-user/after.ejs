@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/end-user/after.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/end-user/Grid.css">
+  <title></title>
+</head>
+
+<body>
+  <section class="signtextbox">
+    <div class="row">
+      <% if (status === 'CONFIRMATION') { %>
+        <div class="title">
+          <h3><strong><em>Congratulations!! <br>You got the <%= formatOrderedNumber(pos) %> seat</em></strong></h3>
+        </div>
+        <div class="desc">
+          <ul>
+            <li>Please pay your fee by 30 February 2019</li>
+            <li>We have sent your ticker order detail to your email</li>
+          </ul>
+        </div>
+      <% } else if (status === 'WAITING') { %>
+        <div class="title">
+          <h3><strong><em>There's still hope!! <br>You got the <%= formatOrderedNumber(pos) %> place in the Waiting List</em></strong></h3>
+        </div>
+        <div class="desc">
+          <ul>
+            <li>We will inform you as soon as you we got a place for you!</li>
+            <li>We have sent your ticker order detail to your email</li>
+          </ul>
+        </div>
+      <% } else if (status === 'REJECTED') { %>
+        <div class="title">
+          <h3><strong><em>You can't sign up for this event anymore</em></strong></h3>
+        </div>
+        <div class="desc">
+          <ul>
+            <li>Either you have signed up for this event or,</li>
+            <li>the registration is already closed</li>
+          </ul>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (['CONFIRMATION', 'WAITING'].includes(status)) { %>
+      <form action="" method="POST">
+        <div class="container center-align">
+          <h6>Want to change your email?</h6>
+          <div class="row">
+            <div class="input-field col s8 offset-s2 m6 offset-m3 l4 offset-l4">  
+              <input type="email" name="Email" class="validate center-align" value="<%= form.data.Email %>" required>
+              <label class="active">Email</label>
+              <button type="submit" class="waves-effect waves-light btn">SAVE & RESEND EMAIL</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    <% } %>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      $('label')
+        .addClass('active')
+        .click(function () {
+          $(this).siblings('input').focus()
+        })
+
+      <% if (['CONFIRMATION', 'WAITING'].includes(status)) { %>
+        $('form').submit(async function (event) {
+          console.log('hahah')
+          event.preventDefault()
+          try {
+            let $toast = $(M.toast({ html: 'Updating email...' }, { displayLength: 9999999999 }).el)
+            let updatedEvent = await $.post('/end-user/api/form/<%= form._id %>/email?_method=PUT', {
+              Email: $('input[type=email]').val()
+            })
+            $toast.fadeOut('slow')
+            M.toast({ html: 'Email updated' }, { displayLength: 2000 })
+          } catch (err) {
+            console.log(err)
+            M.toast({ html: 'Failed to update email!' }, { displayLength: 2000 })
+          }
+        })
+      <% } %>
+    })
+  </script>
+</body>
+
+</html>
