@@ -11,37 +11,36 @@
 </head>
 
 <body>
-  <section class="signtextbox">
+  <section class="signtext">
     <div class="row">
       <% if (status === 'CONFIRMATION') { %>
-        <div class="title">
-          <h3><strong><em>Congratulations!! <br>You got the <%= formatOrderedNumber(pos) %> seat</em></strong></h3>
+        <div class="signtextbox">
+          <h3><strong><em>Congratulations!! <br>You got the <%= formatOrderedNumber(form.slotNumber) %> seat</em></strong></h3>
         </div>
         <div class="desc">
-          <ul>
-            <li>Please pay your fee by 30 February 2019</li>
-            <li>We have sent your ticker order detail to your email</li>
-          </ul>
+          <% if (price === -1) { %>
+            <p>Please wait for our admin's confirmation</p>
+          <% } else { %>
+            <p>Please pay Rp. <%= price.toLocaleString() %> before <%= moment(event.paymentDate).format('dddd, Do MMMM YYYY [at] HH:mm') %></p>
+          <% } %>
+          
+          <p>We have sent your ticker order detail to your email</p>
         </div>
       <% } else if (status === 'WAITING') { %>
-        <div class="title">
-          <h3><strong><em>There's still hope!! <br>You got the <%= formatOrderedNumber(pos) %> place in the Waiting List</em></strong></h3>
+        <div class="signtextbox">
+          <h3><strong><em>There's still hope!! <br>You got the <%= formatOrderedNumber(form.slotNumber) %> place in the Waiting List</em></strong></h3>
         </div>
         <div class="desc">
-          <ul>
-            <li>We will inform you as soon as you we got a place for you!</li>
-            <li>We have sent your ticker order detail to your email</li>
-          </ul>
+          <p>We will inform you as soon as you we got a place for you!</p>
+          <p>We have sent your ticker order detail to your email</p>
         </div>
       <% } else if (status === 'REJECTED') { %>
-        <div class="title">
+        <div class="signtextbox">
           <h3><strong><em>You can't sign up for this event anymore</em></strong></h3>
         </div>
         <div class="desc">
-          <ul>
-            <li>Either you have signed up for this event or,</li>
-            <li>the registration is already closed</li>
-          </ul>
+          <p>Either you have signed up for this event or,</p>
+          <p>the registration is already closed</p>
         </div>
       <% } %>
     </div>
@@ -81,7 +80,7 @@
           event.preventDefault()
           try {
             let $toast = $(M.toast({ html: 'Updating email...' }, { displayLength: 9999999999 }).el)
-            let updatedEvent = await $.post('/end-user/api/form/<%= form._id %>/email?_method=PUT', {
+            let updatedEvent = await $.post('/end-user/api/event/<%= event._id %>/form/<%= form._id %>/email?_method=PUT', {
               Email: $('input[type=email]').val()
             })
             $toast.fadeOut('slow')

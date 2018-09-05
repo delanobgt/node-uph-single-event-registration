@@ -1,3 +1,7 @@
+* {
+  color: white;
+}
+
 .contact-form {
   width: 60%;
   margin: 0 auto;
@@ -7,7 +11,19 @@
   outline: none;
 }
 
+.desc {
+  margin: 3em 0;
+}
+
+.signtext {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.712), rgb(0, 0, 0, 0.712)), url(../../images/firework.jpg);
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+}
+
 .signtextbox {
+  color: white;
   text-align: center;
   top: 50%;
   font-size: 60%;

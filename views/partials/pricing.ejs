@@ -37,6 +37,19 @@
           <span class="helper-text" data-error="" data-success="">The maximum queue length.</span>
           <div class="divider"></div>
         </div>
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+          <h5>Payment Deadline Date</h5>
+          <div class="row">
+            <div class="input-field col s6">
+              <input id="txt_payment_date" type="text" class="validate datepicker" value="<%= moment(event.paymentDate).format('DD-MM-YYYY') %>" required>
+              <label for="txt_payment_date">Date</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="txt_payment_time" type="text" class="validate timepicker" value="<%= moment(event.paymentDate).format('HH:mm') %>" required>
+              <label for="txt_payment_time">Time</label>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="col s12 m10 offset-m1 l8 offset-l2">
@@ -85,9 +98,23 @@
     (function () {
       let $this = $('#div_pricing')
       let $divPaid = $this.find('#div_paid')
+      let paymentDatePicker
+      let paymentTimePicker
 
       // init form
       $(document).ready(function () {
+        paymentDatePicker = M.Datepicker.init(
+          document.querySelector('#txt_payment_date'), { 
+            autoClose: true, 
+            format: 'dd-mm-yyyy', 
+            onOpen: function() {
+              paymentDatePicker.gotoDate(moment($(paymentDatePicker.$el).val(), 'DD-MM-YYYY').toDate())
+              paymentDatePicker.setDate(moment($(paymentDatePicker.$el).val(), 'DD-MM-YYYY').toDate())
+        }})
+        paymentTimePicker = M.Timepicker.init(
+          document.querySelector('#txt_payment_time'), 
+          { autoClose: true, twelveHour: false })
+
         if (<%= event.priceRanges.length %>) {
           $this.find('input[type=radio]:eq(0)').prop('checked', false)
           $this.find('input[type=radio]:eq(1)').prop('checked', true)
@@ -148,6 +175,10 @@
       $this.find('#form_pricing').submit(async function (event) {
         event.preventDefault()
 
+        let paymentDate = moment(
+          $(paymentDatePicker.$el).val() + $(paymentTimePicker.$el).val(),
+          'DD-MM-YYYYhh:mm')
+
         try {
           let priceRanges = 'delete'
           if ($('#radio_paid').prop('checked')) {
@@ -164,7 +195,8 @@
           await $.post('/admin/api/event/<%= event._id %>?_method=PUT', {
             priceRanges: priceRanges,
             seatCount: parseInt($('#num_seat').val()),
-            queueCount: parseInt($('#num_queue').val())
+            queueCount: parseInt($('#num_queue').val()),
+            paymentDate: paymentDate.format('YYYY-MM-DDHHmm')
           })
           $toast.fadeOut('slow')
           M.toast({html: 'Pricing updated'}, { displayLength: 2000 })

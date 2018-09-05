@@ -2,6 +2,8 @@ module.exports = (io) => {
   let axios = require('axios')
   let express = require('express')
   let router = express.Router()
+  let mailer = require('../../modules/mailer')
+  let moment = require('moment')
 
   let auth = require('../../middlewares/auth')
   let db = require('../../models/index')
@@ -46,6 +48,23 @@ module.exports = (io) => {
       return res.redirect('back')
     }
 
+    // check for register moment
+    if (!moment(Date.now()).isBetween(moment(event.openDate), moment(event.closeDate))) {
+      return res.render('end-user/after', { status: 'REJECTED' })
+    }
+
+    // check for duplicate registrant
+    try {
+      let sameForms = await db.Form.find({
+        ownedBy: event._id,
+        'data.Student ID': req.body['Student ID']
+      })
+      if (sameForms.length) 
+        return res.render('end-user/after', { status: 'REJECTED' })
+    } catch (err) {
+      return res.redirect('back')
+    }
+
     // make new formData
     let fieldNames = ['Student ID', 'Email'].concat(event.formSchema.map(field => field.label))
     let newFormData = {}
@@ -68,20 +87,8 @@ module.exports = (io) => {
       }
     }
 
+    // insert form to DB
     try {
-      let sameForms = await db.Form.find({
-        ownedBy: event._id,
-        'data.Student ID': newFormData['Student ID']
-      })
-      if (sameForms.length) return res.render('end-user/after', {
-        status: 'REJECTED'
-      })
-    } catch (err) {
-      return res.redirect('back')
-    }
-
-    try {
-      // insert form to DB
       let createdForm = await db.Form.create({
         data: newFormData,
         ownedBy: event._id
@@ -95,7 +102,7 @@ module.exports = (io) => {
     return res.redirect('back')
   })
 
-  // after route
+  // SHOW after
   router.get('/event/:eventID/form/:formID', async (req, res) => {
     try {
       let eventID = req.params.eventID
@@ -121,36 +128,48 @@ module.exports = (io) => {
 
       // decide form status - or even delete it
       if (leftSideLength <= event.seatCount) {
+        // calculate registrant's ordering
+        let price = -1, priceIndex = leftSideLength
+        if (event.priceRanges.length) {
+          for (let priceRange of event.priceRanges) {
+            if (priceIndex <= priceRange.peopleCount) {
+              price = priceRange.price
+              break
+            }
+            priceIndex -= priceRange.peopleCount
+          }
+        }
+
         form.status = 'CONFIRMATION'
+        form.price = price
+        form.slotNumber = leftSideLength
         form = await form.save()
         emitSlotCount(event)
+        mailer.createAndSendEmail({ form, event, formatOrderedNumber })
         return res.render('end-user/after', {
           status: 'CONFIRMATION',
           event,
           form,
-          formatOrderedNumber,
-          pos: leftSideLength
+          price, 
+          formatOrderedNumber
         })
       } else if (leftSideLength - event.seatCount <= event.queueCount) {
         form.status = 'WAITING'
+        form.slotNumber = leftSideLength - event.seatCount
         form = await form.save()
         emitSlotCount(event)
+        mailer.createAndSendEmail({ form, event, formatOrderedNumber })
         return res.render('end-user/after', {
           status: 'WAITING',
           event,
           form,
-          formatOrderedNumber,
-          pos: leftSideLength - event.seatCount
-        })
-      } else {
-        await form.remove()
-        emitSlotCount(event)
-        return res.render('end-user/after', {
-          status: 'REJECTED',
-          event,
-          form,
           formatOrderedNumber
         })
+      } else {
+        form = await form.remove()
+        emitSlotCount(event)
+        mailer.createAndSendEmail({ form, event })
+        return res.render('end-user/after', { status: 'REJECTED' })
       }
     } catch (err) {
       console.log(err)
@@ -158,14 +177,17 @@ module.exports = (io) => {
     }
   })
 
-  router.put('/api/form/:id/email', async (req, res) => {
-    let id = req.params.id
+  router.put('/api/event/:eventID/form/:formID/email', async (req, res) => {
+    let eventID = req.params.eventID
+    let formID = req.params.formID
     try {
-      let form = await db.Form.findById(id)
+      let event = await db.Event.findById(eventID)
+      let form = await db.Form.findById(formID)
       if (req.body.Email) {
         form.data.Email = req.body.Email
         form.markModified('data')
         await form.save()
+        mailer.createAndSendEmail({ form, event, formatOrderedNumber })
       } else throw new Error('no email provided')
       return res.json({
         form

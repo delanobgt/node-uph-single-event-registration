@@ -1,0 +1,93 @@
+<div id="div_registrant" class="row">
+  <h2 class="center-align">Registrants</h2>
+
+  <style>
+    #form_website_info .divider {
+      margin: 1.5em 0;
+    }
+  </style>
+
+  <form id="form_registrant" class="col s12" method="POST">
+    <div class="container">
+      <div id="div_table">
+        <table id="table" class="display" style="width:100%;">
+          <thead>
+            <tr>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+  <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
+  <script>
+    async function initTable(tableSelector) {
+      const $table = $(tableSelector)
+      try {
+        let forms = await $.get('/admin/api/event/<%= event._id %>/form')
+        
+        let col = 0, exportOptionColumns = []
+        for (let key of Object.keys(forms[0].data)) {
+          $table.find('tr').append($('<th>').html(key))
+          exportOptionColumns.push(col++)
+        }
+        $table.find('tr').append($('<th>')).append($('<th>')).append($('<th>'))
+
+        let formattedColumn = Object.keys(forms[0].data).map(key => {
+          return { title: key }
+        })
+        let formattedData = forms.map(form => {
+          return Object.values(form.data).concat([
+            '<i class="material-icons">check</i>',
+            '<i class="material-icons">access_time</i>',
+            '<i class="material-icons">close</i>'
+          ])
+        })
+
+        let table = $table.DataTable({
+          destroy: true,
+          deferRender: true,
+          responsive: true,
+          dom: 'Bfrtip',
+          lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+          buttons: [
+            'pageLength',
+            {
+              extend: 'copyHtml5',
+              exportOptions: { columns: exportOptionColumns }
+            },
+            {
+              extend: 'excelHtml5',
+              title: '[REGISTRANTS] <%= event.name %>',
+              exportOptions: { columns: exportOptionColumns }
+            },
+            {
+              extend: 'pdf',
+              title: '[REGISTRANTS] <%= event.name %>',
+              text: 'Pdf',
+              orientation: 'landscape',
+              exportOptions: { columns: exportOptionColumns }
+            }
+          ],
+          column: formattedColumn,
+          data: formattedData
+        })
+      } catch (err) {
+        console.log(err)
+      } finally {
+        
+      }
+    }
+
+    $(document).ready(async function () {
+      await initTable('#table')
+    })
+  </script>
+</div>

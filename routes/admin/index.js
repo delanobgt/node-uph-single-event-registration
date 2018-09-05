@@ -19,19 +19,22 @@ router.get('/event/:id', async (req, res) => {
   res.render('admin/event-detail', { event, showImage })
 })
 
-// db.Event.remove({}, () => {
-//   db.Event.create({
-//     name: 'name',
-//     displayRoute: 'displayRoute',
-//     priceRanges: [{
-//       peopleCount: 1,
-//       price: 10
-//     }],
-//     title: 'title',
-//     desc: 'desc',
-//   })
-// })
+// API - GET REGISTRANTS
+router.get('/api/event/:eventID/form', async (req, res) => {
+  let eventID = req.params.eventID
+  try {
+    let event = await db.Event.findById(eventID)
+    let forms = await db.Form.find({
+      ownedBy: event._id
+    })
+    res.json(forms)
+  } catch (err) {
+    console.log(err)
+    res.status(404).json({ error: true})
+  }
+})
 
+// UPDATE event
 router.put('/api/event/:id', async (req, res) => {
   console.log(req.body)
   let id = req.params.id
@@ -43,9 +46,9 @@ router.put('/api/event/:id', async (req, res) => {
         if (['formSchema', 'priceRanges'].includes(key)) {
           if (req.body[key] == 'delete') event[key] = []
           else event[key] = req.body[key]
-        } else if (['closeDate', 'openDate'].includes(key)) {
+        } else if (['closeDate', 'openDate', 'paymentDate'].includes(key)) {
           event[key] = moment(req.body[key], 'YYYY-MM-DDHHmm').toDate()
-        } else if (['seatCount'].includes(key)) {
+        } else if (['seatCount', 'queueCount'].includes(key)) {
           event[key] = parseInt(req.body[key])
         } else {
           event[key] = req.body[key]

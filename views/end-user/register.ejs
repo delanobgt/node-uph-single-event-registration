@@ -7,10 +7,12 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
-  <link rel="icon" type="image/jpg" href="http://indonesiakreatif.bekraf.go.id/ikpro/wp-content/uploads/2013/11/logo_uph.jpg">
+  <link rel="icon" type="image/png" href="/images/logo_bem.png">
   <link rel="stylesheet" type="text/css" href="/stylesheets/end-user/register.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/end-user/Grid.css">
   
+  <title>BEM UPH Medan</title>
+
   <style>
     .my-banner {
       position: fixed;
@@ -207,7 +209,9 @@
       $('input[name="Full Name"]').val('').siblings('label').removeClass('active')
       $('input[name="Study Program"]').val('').siblings('label').removeClass('active')
 
-      let socket = io('http://localhost:3000/')
+      // let hostname = window.location.hostname
+      let host = window.location.host
+      let socket = io(host)
       socket.on('connect', function () {
         console.log('connected')
       })

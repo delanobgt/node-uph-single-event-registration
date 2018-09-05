@@ -20,6 +20,7 @@ let EventSchema = new mongoose.Schema({
   desc: String,
   openDate: Date,
   closeDate: Date,
+  paymentDate: Date,
   formSchema: [{
     inputType: {
       type: String,

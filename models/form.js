@@ -14,6 +14,14 @@ let FormSchema = new mongoose.Schema({
     type: String,
     enum: ['PENDING', 'ACCEPTED', 'REJECTED', 'WAITING', 'CONFIRMATION'],
     default: 'PENDING'
+  },
+  price: {
+    type: Number,
+    default: -1
+  },
+  slotNumber: {
+    type: Number,
+    default: -1
   }
 })
 
