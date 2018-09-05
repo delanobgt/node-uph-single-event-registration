@@ -1,13 +1,33 @@
-<h1>Login</h1>
+<!DOCTYPE html>
+<html>
 
-<form action="/auth/login" method="POST">
-    <input type="text" name="username" placeholder="username">
-    <input type="text" name="password" placeholder="password">
-    <input type="submit" value="Submit Now!">
-</form>
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+  <link rel="icon" type="image/png" href="/images/logo_bem.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
 
-<ul>
-    <li><a href="/auth/register">Register</a></li>
-    <li><a href="/auth/login">Login</a></li>
-    <li><a href="/auth/logout">Logout</a></li>
-</ul>
+<body>
+
+  <div class="container center-align">
+    <h1>Login</h1>
+    <form action="/admin/auth/login" method="POST">
+      <div class="row">
+        <div class="input-field col s10 offset-s1 m6 offset-m3 l4 offset-l4">
+          <input id="email" type="email" name="username" class="validate">
+          <label for="email">Email</label>
+        </div>
+        <div class="input-field col s10 offset-s1 m6 offset-m3 l4 offset-l4">
+          <input id="password" type="password" name="password" class="validate">
+          <label for="password">Password</label>
+        </div>
+      </div>
+      <button type="submit" class="waves-effect waves-light btn"><i class="material-icons right">send</i>LOGIN</button>
+    </form>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+</body>
+
+</html>

@@ -3,16 +3,20 @@ let router = express.Router()
 let moment = require('moment')
 let cloudinary = require('cloudinary')
 
+let authRouter = require('./auth')
+let mailer = require('../../modules/mailer')
 let upload = require('../../middlewares/upload')
-let auth = require('../../middlewares/auth')
+let authMW = require('../../middlewares/auth')
 let db = require('../../models/index')
 
-router.get('/', async (req, res) => {
+router.use('/auth', authRouter)
+
+router.get('/', authMW.isLoggedIn, async (req, res) => {
   let event = await db.Event.findOne({})
   res.redirect(`/admin/event/${event._id}`)
 })
 
-router.get('/event/:id', async (req, res) => {
+router.get('/event/:id', authMW.isLoggedIn, async (req, res) => {
   let id = req.params.id
   let event = await db.Event.findById(id)
   let showImage = parseInt(req.query.showImage || '0')
@@ -20,7 +24,7 @@ router.get('/event/:id', async (req, res) => {
 })
 
 // API - GET REGISTRANTS
-router.get('/api/event/:eventID/form', async (req, res) => {
+router.get('/api/event/:eventID/form', authMW.isLoggedIn, async (req, res) => {
   let eventID = req.params.eventID
   try {
     let event = await db.Event.findById(eventID)
@@ -30,12 +34,29 @@ router.get('/api/event/:eventID/form', async (req, res) => {
     res.json(forms)
   } catch (err) {
     console.log(err)
-    res.status(404).json({ error: true})
+    res.status(404).json({ error: true })
+  }
+})
+
+// API - POST REGISTRANTS STATUS
+router.post('/api/event/:eventID/form/:formID/status', authMW.isLoggedIn, async (req, res) => {
+  let eventID = req.params.eventID
+  let formID = req.params.formID
+  try {
+    let event = await db.Event.findById(eventID)
+    let form = await db.Form.findById(formID)
+    form.status = req.body.status
+    await form.save()
+    mailer.createAndSendEmail({ form, event })
+    res.json(form)
+  } catch (err) {
+    console.log(err)
+    res.status(404).json({ error: true })
   }
 })
 
 // UPDATE event
-router.put('/api/event/:id', async (req, res) => {
+router.put('/api/event/:id', authMW.isLoggedIn, async (req, res) => {
   console.log(req.body)
   let id = req.params.id
   try {
@@ -63,7 +84,7 @@ router.put('/api/event/:id', async (req, res) => {
   }
 })
 
-router.put('/event/:id/image', upload.single('image'), async (req, res) => {
+router.put('/event/:id/image', authMW.isLoggedIn, upload.single('image'), async (req, res) => {
   let id = req.params.id
   try {
     let event = await db.Event.findById(id)

@@ -139,7 +139,6 @@ module.exports = (io) => {
             priceIndex -= priceRange.peopleCount
           }
         }
-
         form.status = 'CONFIRMATION'
         form.price = price
         form.slotNumber = leftSideLength

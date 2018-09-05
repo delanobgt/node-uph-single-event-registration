@@ -14,16 +14,19 @@ router.get('/register', async (req, res) => {
   res.render('admin/register')
 })
 router.post('/register', async (req, res) => {
+  console.log(req.body.token, process.env.REGISTER_TOKEN)
+  if (!(req.body.token && req.body.token === process.env.REGISTER_TOKEN)) 
+    return res.redirect('/admin/auth/register')
   db.User.register(
     new db.User({ username: req.body.username }),
     req.body.password,
     (err, user) => {
       if (err) {
         console.log(err)
-        return res.redirect('/auth/register')
+        return res.redirect('/admin/auth/register')
       }
       passport.authenticate('local')(req, res, function () {
-        res.redirect('/')
+        res.redirect('/admin')
       })
     }
   )
@@ -33,15 +36,15 @@ router.get('/login', (req, res) => {
   res.render('admin/login')
 })
 router.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/login',
+  successRedirect: '/admin',
+  failureRedirect: '/admin/auth/login',
 }), (req, res) => {
   // do nothing
 })
 
 router.get('/logout', auth.isLoggedIn, (req, res) => {
   req.logout()
-  res.redirect('/')
+  res.redirect('/admin')
 })
 
 module.exports = router

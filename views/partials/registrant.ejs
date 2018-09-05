@@ -5,10 +5,16 @@
     #form_website_info .divider {
       margin: 1.5em 0;
     }
+
+    .material-icons {
+      cursor: pointer;
+      user-select: none;
+    }
   </style>
 
   <form id="form_registrant" class="col s12" method="POST">
     <div class="container">
+      <h6 id="info_no_data" class="center-align" style="display:none;">No data yet.</h6>
       <div id="div_table">
         <table id="table" class="display" style="width:100%;">
           <thead>
@@ -32,23 +38,56 @@
       const $table = $(tableSelector)
       try {
         let forms = await $.get('/admin/api/event/<%= event._id %>/form')
-        
+        if (!forms.length) {
+          $('#info_no_data').slideDown('slow')
+          console.log('no registrant yet!')
+          return
+        }
+        forms.sort((a, b) => {
+          return new Date(a.createdAt) - new Date(b.createdAt)
+        })
+
+        let formIDs = forms.map(form => form._id)
+
+        // tableHeader and exportOptionsColumn
         let col = 0, exportOptionColumns = []
+        $table.find('tr').append($('<th>'))
+        exportOptionColumns.push(col++)
         for (let key of Object.keys(forms[0].data)) {
-          $table.find('tr').append($('<th>').html(key))
+          $table.find('tr').append($('<th>'))
           exportOptionColumns.push(col++)
         }
         $table.find('tr').append($('<th>')).append($('<th>')).append($('<th>'))
 
-        let formattedColumn = Object.keys(forms[0].data).map(key => {
-          return { title: key }
-        })
-        let formattedData = forms.map(form => {
-          return Object.values(form.data).concat([
-            '<i class="material-icons">check</i>',
-            '<i class="material-icons">access_time</i>',
-            '<i class="material-icons">close</i>'
-          ])
+        let formattedColumn = [{ title: 'No.' }]
+                                .concat(Object.keys(forms[0].data).map(key => { return { title: key } }))
+                                .concat([ { title: '' }, { title: '' }, { title: '' }])
+
+        let mappedIcons = {
+          'check': {
+            'ACCEPTED': '<i class="material-icons" style="color:lightgreen;">check</i>',
+            'CONFIRMATION': '<i class="material-icons" style="color:lightgrey;">check</i>',
+            'REJECTED': ''
+          },
+          'pending': {
+            'ACCEPTED': '',
+            'CONFIRMATION': '<i class="material-icons" style="color:blue;">access_time</i>',
+            'REJECTED': ''
+          },
+          'close': {
+            'ACCEPTED': '',
+            'CONFIRMATION': '<i class="material-icons" style="color:lightgrey;">close</i>',
+            'REJECTED': '<i class="material-icons" style="color:red;">close</i>'
+          }
+        }
+        let formattedData = forms.map((form, index) => {
+          return [index + 1]
+                  .concat(Object.values(form.data))
+                  .concat([
+                    mappedIcons['check'][form.status],
+                    mappedIcons['pending'][form.status],
+                    mappedIcons['close'][form.status],
+                  ])
         })
 
         let table = $table.DataTable({
@@ -76,13 +115,73 @@
               exportOptions: { columns: exportOptionColumns }
             }
           ],
-          column: formattedColumn,
+          columns: formattedColumn,
           data: formattedData
         })
+
+        $table.on('click', 'td', async function () {
+          let tableNoOrder = $(this).closest('tr').children('td:eq(0)').text()
+          let formIndex = parseInt(tableNoOrder) - 1
+          let cellIndex = table.cell($(this)).index()
+          let row = cellIndex.row
+          let col = cellIndex.column
+
+          if ($(this).html().match('^.+material-icons.+check.+$')) {
+            let studentName = table.cell(row, 2).data()
+            let inputName = prompt(`Please type "${studentName}" (without the quotes) to give 'ACCEPTED' status.`)
+            if (inputName !== studentName) {
+              M.toast({html: 'Input mismatch!'}, { displayLength: 3000 })
+              return
+            }
+
+            try {
+              let $toast = $(M.toast({html: 'Saving...'}, { displayLength: 9999999999 }).el)
+              let updatedForm = await $.post(`/admin/api/event/<%= event._id %>/form/${formIDs[formIndex]}/status`, {
+                status: 'ACCEPTED'
+              })
+              
+              table.cell(row, col).data(mappedIcons['check']['ACCEPTED'])
+              table.cell(row, col + 1).data(mappedIcons['pending']['ACCEPTED'])
+              table.cell(row, col + 2).data(mappedIcons['close']['ACCEPTED'])
+
+              $toast.fadeOut('slow')
+              M.toast({html: 'Status Updated & Email Sent'}, { displayLength: 3000 })
+            } catch (err) {
+              console.log(err)
+              M.toast({html: 'Error, please try again.'}, { displayLength: 2000 })
+            }
+          } else if ($(this).html().match('^.+material-icons.+close.+$')) {
+            let studentName = table.cell(row, 2).data()
+            let inputName = prompt(`Please type "${studentName}" (without the quotes) to give 'REJECTED' status.`)
+            if (inputName !== studentName) {
+              M.toast({html: 'Input mismatch!'}, { displayLength: 3000 })
+              return
+            }
+
+            try {
+              let $toast = $(M.toast({html: 'Saving...'}, { displayLength: 9999999999 }).el)
+              let updatedForm = await $.post(`/admin/api/event/<%= event._id %>/form/${formIDs[formIndex]}/status`, {
+                status: 'REJECTED'
+              })
+
+              table.cell(row, col - 2).data(mappedIcons['check']['REJECTED'])
+              table.cell(row, col - 1).data(mappedIcons['pending']['REJECTED'])
+              table.cell(row, col).data(mappedIcons['close']['REJECTED'])
+
+              $toast.fadeOut('slow')
+              M.toast({html: 'Status Updated & Email Sent'}, { displayLength: 3000 })
+            } catch (err) {
+              console.log(err)
+              M.toast({html: 'Error, please try again.'}, { displayLength: 2000 })
+            }
+          }
+        })
+
       } catch (err) {
         console.log(err)
+        M.toast({html: 'Error, please refresh the page.'}, { displayLength: 5000 })
       } finally {
-        
+        // do nothing
       }
     }
 
