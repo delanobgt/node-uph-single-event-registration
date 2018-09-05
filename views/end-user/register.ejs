@@ -269,7 +269,8 @@
 
       try {
         $studentID.siblings('label').html('Student ID (Verifying..)')
-        let student = await $.get(`https://psi-uph-api.herokuapp.com/students/api/${studentID}`)
+        let student = await $.get(`/end-user/api/student/${studentID}`)
+        console.log(student)
         if ($studentID.val() !== studentID) return
         if (student) {
           $('form')[0].isStudentIDValid = true
@@ -277,7 +278,7 @@
           $fullName.siblings('label').addClass('active')
           $fullName.val(student.name)
           $studyProgram.siblings('label').addClass('active')
-          $studyProgram.val(student.study_program.name)
+          $studyProgram.val(student.studyProgram)
         } else {
           $('form')[0].isStudentIDValid = false
           $studentID.siblings('label').html('Student ID <span class="red-text">(Not found)</span>')
