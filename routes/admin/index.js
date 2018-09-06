@@ -100,4 +100,15 @@ router.put('/event/:id/image', authMW.isLoggedIn, upload.single('image'), async 
   }
 })
 
+router.delete('/event/:eventID/forms', authMW.isLoggedIn, async (req, res) => {
+  let eventID = req.params.eventID
+  try {
+    await db.Form.remove({ ownedBy: eventID })
+    res.json({ success: true })
+  } catch (err) {
+    console.log(err)
+    res.status(404).json({ error: true })
+  }
+})
+
 module.exports = router

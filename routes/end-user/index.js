@@ -39,7 +39,8 @@ module.exports = (io) => {
       })
       res.render('end-user/register', {
         currentConfirmationCount: confirmationForms.length,
-        event
+        event,
+        formatOrderedNumber
       })
     } catch (err) {
       console.log(err)
@@ -98,29 +99,18 @@ module.exports = (io) => {
     }
 
     // insert form to DB
+    let form
     try {
-      let createdForm = await db.Form.create({
+      form = await db.Form.create({
         data: newFormData,
         ownedBy: event._id
       })
-      return res.redirect(`/end-user/event/${event._id}/form/${createdForm._id}`)
     } catch (err) {
       console.log(err)
       return res.redirect('back')
     }
 
-    return res.redirect('back')
-  })
-
-  // SHOW after
-  router.get('/event/:eventID/form/:formID', async (req, res) => {
     try {
-      let eventID = req.params.eventID
-      let formID = req.params.formID
-
-      let event = await db.Event.findById(eventID)
-      let form = await db.Form.findById(formID)
-
       // count existing form in DB
       let leftSide = await db.Form.find({
         ownedBy: event._id,
@@ -155,38 +145,49 @@ module.exports = (io) => {
         form = await form.save()
         emitSlotCount(event)
         mailer.createAndSendEmail({ form, event, formatOrderedNumber })
-        return res.render('end-user/after', {
-          status: 'CONFIRMATION',
-          event,
-          form,
-          price, 
-          formatOrderedNumber
-        })
+        return res.redirect(`/end-user/event/${event._id}/form/${form._id}`)
       } else if (leftSideLength - event.seatCount <= event.queueCount) {
         form.status = 'WAITING'
         form.slotNumber = leftSideLength - event.seatCount
         form = await form.save()
         emitSlotCount(event)
         mailer.createAndSendEmail({ form, event, formatOrderedNumber })
-        return res.render('end-user/after', {
-          status: 'WAITING',
-          event,
-          form,
-          formatOrderedNumber
-        })
+        return res.redirect(`/end-user/event/${event._id}/form/${form._id}`)
       } else {
         form = await form.remove()
         emitSlotCount(event)
-        mailer.createAndSendEmail({ form, event })
         return res.render('end-user/after', { status: 'REJECTED' })
       }
+    } catch (err) {
+      console.log(err)
+      return res.redirect('back')
+    }    
+
+    return res.redirect('back')
+  })
+
+  // SHOW after
+  router.get('/event/:eventID/form/:formID', async (req, res) => {
+    try {
+      let eventID = req.params.eventID
+      let formID = req.params.formID
+      let event = await db.Event.findById(eventID)
+      let form = await db.Form.findById(formID)
+
+      return res.render('end-user/after', {
+        status: form.status,
+        event,
+        form,
+        price: form.price,
+        formatOrderedNumber
+      })
     } catch (err) {
       console.log(err)
       return res.redirect('back')
     }
   })
 
-  router.put('/api/event/:eventID/form/:formID/email', async (req, res) => {
+  router.put('/event/:eventID/form/:formID/email', async (req, res) => {
     let eventID = req.params.eventID
     let formID = req.params.formID
     try {
@@ -198,14 +199,10 @@ module.exports = (io) => {
         await form.save()
         mailer.createAndSendEmail({ form, event, formatOrderedNumber })
       } else throw new Error('no email provided')
-      return res.json({
-        form
-      })
+      return res.redirect('/')
     } catch (err) {
       console.log(err)
-      return res.status(404).json({
-        error: true
-      })
+      return res.redirect('back')
     }
   })
 

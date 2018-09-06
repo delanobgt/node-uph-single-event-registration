@@ -46,11 +46,13 @@
     </div>
 
     <% if (['CONFIRMATION', 'WAITING'].includes(status)) { %>
-      <form action="" method="POST">
+      <form action="/end-user/event/<%= event._id %>/form/<%= form._id %>/email?_method=PUT" method="POST">
         <div class="container center-align">
-          <h6>Want to change your email?</h6>
+          <h6>Mistype your email?</h6>
+          <h6>Edit your email here</h6>
+          <h6>(You can only edit your email once)</h6>
           <div class="row">
-            <div class="input-field col s8 offset-s2 m6 offset-m3 l4 offset-l4">  
+            <div class="input-field col s8 offset-s2 m6 offset-m3 l4 offset-l4">
               <input type="email" name="Email" class="validate center-align" value="<%= form.data.Email %>" required>
               <label class="active">Email</label>
               <button type="submit" class="waves-effect waves-light btn">SAVE & RESEND EMAIL</button>
@@ -73,24 +75,6 @@
         .click(function () {
           $(this).siblings('input').focus()
         })
-
-      <% if (['CONFIRMATION', 'WAITING'].includes(status)) { %>
-        $('form').submit(async function (event) {
-          console.log('hahah')
-          event.preventDefault()
-          try {
-            let $toast = $(M.toast({ html: 'Updating email...' }, { displayLength: 9999999999 }).el)
-            let updatedEvent = await $.post('/end-user/api/event/<%= event._id %>/form/<%= form._id %>/email?_method=PUT', {
-              Email: $('input[type=email]').val()
-            })
-            $toast.fadeOut('slow')
-            M.toast({ html: 'Email updated' }, { displayLength: 2000 })
-          } catch (err) {
-            console.log(err)
-            M.toast({ html: 'Failed to update email!' }, { displayLength: 2000 })
-          }
-        })
-      <% } %>
     })
   </script>
 </body>

@@ -16,12 +16,10 @@ let FormSchema = new mongoose.Schema({
     default: 'PENDING'
   },
   price: {
-    type: Number,
-    default: -1
+    type: Number
   },
   slotNumber: {
-    type: Number,
-    default: -1
+    type: Number
   }
 })
 

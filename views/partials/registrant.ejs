@@ -14,6 +14,9 @@
 
   <form id="form_registrant" class="col s12" method="POST">
     <div class="container">
+      <div class="row right">
+        <button id="btn_delete" type="button" class="waves-effect waves-light red btn"><i class="material-icons right">delete</i>DELETE</button>
+      </div>
       <h6 id="info_no_data" class="center-align" style="display:none;">No data yet.</h6>
       <div id="div_table">
         <table id="table" class="display" style="width:100%;">
@@ -187,6 +190,26 @@
 
     $(document).ready(async function () {
       await initTable('#table')
+
+      $('#btn_delete').click(async function () {
+        let deleteResp = prompt('Type "I am" without quotes (1/3)')
+        if (deleteResp !== 'I am') return
+        deleteResp = prompt('Type "really" without quotes (2/3)')
+        if (deleteResp !== 'really') return
+        deleteResp = prompt('Type "sure" without quotes (3/3)')
+        if (deleteResp !== 'sure') return
+
+        try {
+          let $toast = $(M.toast({html: 'Deleting registrars...'}, { displayLength: 9999999999 }).el)
+          await $.post(`/admin/event/<%= event._id %>/forms?_method=DELETE`)
+          $toast.fadeOut('slow')
+          M.toast({html: 'All registrars deleted!'}, { displayLength: 3000 })
+          window.location.reload(true)
+        } catch (err) {
+          console.log(err)
+          M.toast({html: 'Error, please try again.'}, { displayLength: 2000 })
+        }
+      })
     })
   </script>
 </div>

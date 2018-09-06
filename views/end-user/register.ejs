@@ -39,7 +39,7 @@
     #info_slot {
       z-index: 999;
       position: fixed;
-      top: 6em;
+      top: 4em;
       left: 0;
       padding: 0.2em;
       color: white;
@@ -59,14 +59,13 @@
   <div id="info_slot"><%= event.seatCount - currentConfirmationCount %> tickets left</div>
 
   <div class="my-spacebar"></div>
-  <a class="go-to-register btn-floating btn-large waves-effect waves-light orange"><i class="material-icons">create</i></a>
-
+  
   <header>
     <nav class="nav-wrapper grey darken-3">
       <div class="container">
-        <a href="" class="brand-logo">BEM UPH Medan</a>
+        <a href="" class="brand-logo"> <img style="width:40px;" src="/images/logo_bem.png"> BEM UPH Medan</a>
         <ul class="right hide-on-med-and-down">
-          <li><a class="go-to-register">Register</a></li>
+          <li><a class="go-to-register">Register Now!</a></li>
         </ul>
       </div>
     </nav>
@@ -75,9 +74,6 @@
   <section class="full-slider">
     <div class="carousel carousel-slider">
       <a class="carousel-item" href="#one!"><img src="<%= event.mainImage.secure_url %>"></a>
-      <div class="carousel-fixed-item center">
-        <a class="btn waves-effect white grey-text darken-text-2 go-to-register">Register</a>
-      </div>
     </div>
   </section>
 
@@ -91,23 +87,47 @@
   </section>
 
   <% if (event.priceRanges.length) { %>
-    <section class="section-price">
+    <section class="section-price grey lighten-2">
       <div class="row">
         <h2 class="center">TICKET PRICE</h2>
       </div>  
       <div class="container">
         <div class="row">
-          <% let curPeopleCount = 0 %>
-          <% for (let priceRange of event.priceRanges) { %>
-            <div class="col s12 m4">
+          <% if (event.priceRanges.length === 2) { %>
+            <% let priceRanges = event.priceRanges %>
+            <div class="col s12 m4 offset-m1">
               <div class="card white">
                 <div class="card-content black-text">
-                  <span class="card-title center"><%= curPeopleCount + 1 %> - <%= curPeopleCount + priceRange.peopleCount %></span>
-                  <p>Price : Rp. <%= priceRange.price.toLocaleString() %></p>
+                  <span class="card-title center"><%= formatOrderedNumber(1) %> - <%= formatOrderedNumber(priceRanges[0].peopleCount) %> registrar</span>
+                  <p>Price : Rp. <%= priceRanges[0].price.toLocaleString() %></p>
                 </div>
               </div>
             </div>
-            <% curPeopleCount += priceRange.peopleCount %>
+            <div class="col s12 m4 offset-m2">
+              <div class="card white">
+                <div class="card-content black-text">
+                  <span class="card-title center"><%= formatOrderedNumber(priceRanges[0].peopleCount + 1) %> - <%= formatOrderedNumber(priceRanges[0].peopleCount + priceRanges[1].peopleCount) %> registrar</span>
+                  <p>Price : Rp. <%= priceRanges[1].price.toLocaleString() %></p>
+                </div>
+              </div>
+            </div>
+          <% } else { %>
+            <% let curPeopleCount = 0 %>
+            <% for (let priceRange of event.priceRanges) { %>
+              <% if (event.priceRanges.length == 1) { %>
+                <div class="col s12 m4 offset-m4">
+              <% } else if (event.priceRanges.length == 3) { %>
+                <div class="col s12 m4">
+              <% } %>
+                <div class="card white">
+                  <div class="card-content black-text">
+                    <span class="card-title center"><%= formatOrderedNumber(curPeopleCount + 1) %> - <%= formatOrderedNumber(curPeopleCount + priceRange.peopleCount) %> registrar</span>
+                    <p>Price : Rp. <%= priceRange.price.toLocaleString() %></p>
+                  </div>
+                </div>
+              </div>
+              <% curPeopleCount += priceRange.peopleCount %>
+            <% } %>
           <% } %>
         </div>
       </div>
@@ -168,12 +188,12 @@
     </form>
   </section>
 
-  <footer class="grey darken-3 white-text">
+  <footer class="grey lighten-1 white-text">
     <div class="progress" style="height:0.35em; display:none;">
       <div class="indeterminate orange"></div>
     </div>
-    <div class="container center-align">
-      BEM &nbsp;&nbsp; x &nbsp;&nbsp; HMFIK
+    <div class="container center-align" style="font-size:25px;">
+      <strong><img style="width:27px;" src="/images/logo_bem.png"> BEM &nbsp;&nbsp; x &nbsp;&nbsp; <img style="height:20px;" src="/images/logo_hmfik.png"> HMFIK</strong>
     </div>
   </footer>
 
@@ -218,7 +238,10 @@
       let ticketLeftCount = <%= event.seatCount - currentConfirmationCount %>
       socket.on('update_slot_count', function(data) {
         ticketLeftCount = Math.min(ticketLeftCount, data.totalConfirmationCount - data.currentConfirmationCount)
-        $('#info_slot').html(`${ticketLeftCount} tickets left`)
+        if (ticketLeftCount > 0)
+          $('#info_slot').html(`${ticketLeftCount} tickets left`)
+        else
+          $('#info_slot').html(`No tickets left`)
       })
 
       // registration interval update
@@ -303,12 +326,17 @@
       ms = ms % 1000
 
       if (!type || type === 'form') {
-        return `Until opening<br>${days} days, ${hours}:${minutes}:${seconds})`
+        return `${days} days, ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until opening`
       } else if (type === 'banner-open') {
-        return `Until opening (${days} days, ${hours}:${minutes}:${seconds})`
+        return `${days} days, ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until opening`
       } else if (type === 'banner-close') {
-        return `Until closing (${days} days, ${hours}:${minutes}:${seconds})`
+        return `${days} days, ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until closing `
       }
+    }
+
+    function pad2(n) {
+      if (n <= 9) return '0'+n
+      return n
     }
   </script>
 </body>
