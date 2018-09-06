@@ -6,8 +6,8 @@
   
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
   <link rel="icon" type="image/png" href="/images/logo_bem.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/end-user/register.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/end-user/Grid.css">
   
@@ -39,7 +39,7 @@
     #info_slot {
       z-index: 999;
       position: fixed;
-      top: 4em;
+      top: 3.75em;
       left: 0;
       padding: 0.2em;
       color: white;
@@ -47,6 +47,10 @@
       font-size: 0.9em;
       border-top-right-radius: 7px;
       border-bottom-right-radius: 7px;
+    }
+
+    .my-footer {
+      padding: 0.5em 0;
     }
   </style>
 
@@ -56,7 +60,7 @@
 <body>
   <div class="my-banner orange white-text"></div>
 
-  <div id="info_slot"><%= event.seatCount - currentConfirmationCount %> tickets left</div>
+  <div id="info_slot" class="pulse" style="display:none;"><%= event.seatCount - currentConfirmationCount %> tickets left</div>
 
   <div class="my-spacebar"></div>
   
@@ -142,7 +146,7 @@
 
   <section class="speaker-section" id="section_register">
     <div class="row">
-      <h2 class="center">REGISTER NOW!</h2>
+      <h3 class="center">REGISTER NOW!</h3>
     </div>
 
     <h6 id="h_timer" class="center-align">
@@ -188,16 +192,18 @@
     </form>
   </section>
 
-  <footer class="grey lighten-1 white-text">
+  <footer class="">
     <div class="progress" style="height:0.35em; display:none;">
       <div class="indeterminate orange"></div>
     </div>
-    <div class="container center-align" style="font-size:25px;">
-      <strong><img style="width:27px;" src="/images/logo_bem.png"> BEM &nbsp;&nbsp; x &nbsp;&nbsp; <img style="height:20px;" src="/images/logo_hmfik.png"> HMFIK</strong>
+    <div class="divider"></div>
+    <div class="grey-text text-lighten-1 my-footer container center-align" style="font-size:24px;">
+      <strong><img style="width:27px;" src="/images/logo_bem.png"> BEM &nbsp;&nbsp; <i class="material-icons">close</i> &nbsp;&nbsp; <img style="height:20px;" src="/images/logo_hmfik.png"> HMFIK</strong>
     </div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/color/jquery.color-2.1.2.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
@@ -233,8 +239,25 @@
       let host = window.location.host
       let socket = io(host)
       socket.on('connect', function () {
-        console.log('connected')
+        console.log('connected to', host)
       })
+
+      let leftColor = { 
+        r: 127, 
+        g: 225, 
+        b: 0 };
+      let rightColor = { 
+        r: 255, 
+        g: 0, 
+        b: 0 };
+      (function () {
+        let totalSeat = <%= event.seatCount %>
+        let currentSeat = <%= currentConfirmationCount %>
+        let r = leftColor.r + Math.floor(currentSeat/totalSeat * (rightColor.r-leftColor.r))
+        let g = leftColor.g + Math.floor(currentSeat/totalSeat * (rightColor.g-leftColor.g))
+        let b = leftColor.b + Math.floor(currentSeat/totalSeat * (rightColor.b-leftColor.b))
+        $('#info_slot').css({ backgroundColor: `rgb(${r}, ${g}, ${b})` }).slideDown('slow')
+      })()
       let ticketLeftCount = <%= event.seatCount - currentConfirmationCount %>
       socket.on('update_slot_count', function(data) {
         ticketLeftCount = Math.min(ticketLeftCount, data.totalConfirmationCount - data.currentConfirmationCount)
@@ -242,6 +265,11 @@
           $('#info_slot').html(`${ticketLeftCount} tickets left`)
         else
           $('#info_slot').html(`No tickets left`)
+
+        let r = leftColor.r + Math.floor(data.currentConfirmationCount/data.totalConfirmationCount * (rightColor.r-leftColor.r))
+        let g = leftColor.g + Math.floor(data.currentConfirmationCount/data.totalConfirmationCount * (rightColor.g-leftColor.g))
+        let b = leftColor.b + Math.floor(data.currentConfirmationCount/data.totalConfirmationCount * (rightColor.b-leftColor.b))
+        $('#info_slot').animate({ backgroundColor: `rgb(${r}, ${g}, ${b})` }, 'slow')
       })
 
       // registration interval update

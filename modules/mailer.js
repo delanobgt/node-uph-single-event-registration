@@ -23,7 +23,7 @@ function createAndSendEmail(options) {
   const mailOptions = {
     from: process.env.GMAIL_USERNAME,
     to: options.form.data['Email'],
-    subject: 'HMFIK UPH Medan',
+    subject: `[BEM] ${options.event.name}`,
     html: contentHTML
   }
   sendEmail(mailOptions)
