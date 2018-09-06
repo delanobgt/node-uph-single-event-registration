@@ -313,7 +313,7 @@
 
     })
 
-    let updateMandatoryFields = _.throttle(async (studentID) => {
+    let updateMandatoryFields = _.debounce(async (studentID) => {
       let $studentID = $('input[name="Student ID"]')
       let $fullName = $('input[name="Full Name"]')
       let $studyProgram = $('input[name="Study Program"]')
@@ -341,7 +341,7 @@
       } catch (err) {
         console.log(err)
       }
-    }, 1000)
+    }, 350)
 
     function formatCountdown (ms, type) {
       let days = Math.floor(ms / (24*60*60*1000))
