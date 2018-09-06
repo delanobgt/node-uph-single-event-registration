@@ -55,30 +55,56 @@ function composeEmail(options) {
       </body>
     `
   } else if (options.form.status === 'CONFIRMATION') { 
-    return `
-    <div>
-      <section style="max-width: 480px; margin:0 auto; padding:0; box-sizing: border-box; border-style:inset;">
-          <header style="background-color: rgb(9, 228, 9) ; text-align: center; padding: 12px 0;" >${options.event.name}</header>
-          <div class="row" style="border-style: solid; border-width:thin;  ">
-              <h1 style="text-align: center">Status : <span style="color:blue;">WAITING FOR PAYMENT</span></h1>
-              <strong><p style="text-align: center">Description : Please pay Rp. ${options.form.price.toLocaleString()} before ${moment(options.event.paymentDate).format('dddd, Do MMMM YYYY [at] HH:mm')} to ensure your
-              participation</p></strong>
-          </div>
-          <div class="row" style="border-style: solid; border-width: thin; ">
-            <u><h1 style="text-align: center">Student Detail</h1></u>
-            <p style="text-align: center;">
-              Student ID : ${options.form.data['Student ID']}
-            </p>
-            <p style="text-align: center;">
-              Name : ${options.form.data['Full Name']}
-            </p>
-            <p style="text-align: center;">
-              Study Program : ${options.form.data['Study Program']}
-            </p>
-          </div>
-      </section>
-    </div>
-    `
+    if (options.event.priceRanges.length) {
+      return `
+      <div>
+        <section style="max-width: 480px; margin:0 auto; padding:0; box-sizing: border-box; border-style:inset;">
+            <header style="background-color: rgb(9, 228, 9) ; text-align: center; padding: 12px 0;" >${options.event.name}</header>
+            <div class="row" style="border-style: solid; border-width:thin;  ">
+                <h1 style="text-align: center">Status : <span style="color:blue;">WAITING FOR PAYMENT</span></h1>
+                <strong><p style="text-align: center">Description : Please pay Rp. ${options.form.price.toLocaleString()} before ${moment(options.event.paymentDate).format('dddd, Do MMMM YYYY [at] HH:mm')} to ensure your
+                participation</p></strong>
+            </div>
+            <div class="row" style="border-style: solid; border-width: thin; ">
+              <u><h1 style="text-align: center">Student Detail</h1></u>
+              <p style="text-align: center;">
+                Student ID : ${options.form.data['Student ID']}
+              </p>
+              <p style="text-align: center;">
+                Name : ${options.form.data['Full Name']}
+              </p>
+              <p style="text-align: center;">
+                Study Program : ${options.form.data['Study Program']}
+              </p>
+            </div>
+        </section>
+      </div>
+      `
+    } else {
+      return `
+      <div>
+        <section style="max-width: 480px; margin:0 auto; padding:0; box-sizing: border-box; border-style:inset;">
+            <header style="background-color: rgb(9, 228, 9) ; text-align: center; padding: 12px 0;" >${options.event.name}</header>
+            <div class="row" style="border-style: solid; border-width:thin;  ">
+                <h1 style="text-align: center">Status : <span style="color:blue;">WAITING FOR ADMIN CONFIRMATION</span></h1>
+                <strong><p style="text-align: center">Description : Please wait for our admin's confirmation</p></strong>
+            </div>
+            <div class="row" style="border-style: solid; border-width: thin; ">
+              <u><h1 style="text-align: center">Student Detail</h1></u>
+              <p style="text-align: center;">
+                Student ID : ${options.form.data['Student ID']}
+              </p>
+              <p style="text-align: center;">
+                Name : ${options.form.data['Full Name']}
+              </p>
+              <p style="text-align: center;">
+                Study Program : ${options.form.data['Study Program']}
+              </p>
+            </div>
+        </section>
+      </div>
+      `
+    }
   } else if (options.form.status === 'WAITING') { 
     return `
     <div>
