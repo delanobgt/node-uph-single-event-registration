@@ -16,8 +16,12 @@ form {
   font-size: 1.35em;
 }
 
+body {
+  background: black;
+}
+
 .signtext {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.712), rgb(0, 0, 0, 0.712)), url(../../images/firework.jpg);
+  background-image: linear-gradient(to left, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url(../../images/firework.jpg), linear-gradient(to left, black, black);
   background-size: cover;
   background-position: center;
   height: 100vh;
