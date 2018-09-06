@@ -23,7 +23,7 @@ header .btn {
 }
 
 .section-price-free {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgb(0, 0, 0, 0.35)), url(https://res.cloudinary.com/hmfikuphmedan2018/image/upload/v1536250613/starry_night.jpg), linear-gradient(to left, lightblue, rgb(195, 212, 218));
+  background: rgb(50, 184, 233);
   background-size: cover;
   -o-background-size: cover;
   -moz-background-size: cover;
@@ -32,7 +32,7 @@ header .btn {
 }
 
 .section-title {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgb(0, 0, 0, 0.45)), url(https://res.cloudinary.com/hmfikuphmedan2018/image/upload/v1536250636/landscape.jpg), linear-gradient(to left, rgb(226, 153, 69), rgb(226, 153, 69)) !important;
+  background: rgb(226, 153, 69) !important;
   background-size: cover;
   -o-background-size: cover;
   -moz-background-size: cover;

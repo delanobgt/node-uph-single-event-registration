@@ -21,7 +21,7 @@ body {
 }
 
 .signtext {
-  background-image: linear-gradient(to left, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url(https://res.cloudinary.com/hmfikuphmedan2018/image/upload/v1536250624/firework.jpg), linear-gradient(to left, black, black);
+  background: black;
   background-size: cover;
   -o-background-size: cover;
   -moz-background-size: cover;
