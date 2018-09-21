@@ -14,11 +14,11 @@ module.exports = (io) => {
 
   router.get('/api/student/:studentID', async (req, res) => {
     try {
-      let student = await db.Student.findOne({ studentID: req.params.studentID })
-      res.json(student)
+      let student = await axios.get(`https://psi-uph-api.herokuapp.com/students/api/${req.params.studentID}`)
+      res.json(student.data)
     } catch (err) {
       console.log(err)
-      res.status(404).json(null)
+      res.json(null)
     }
   })
 
@@ -85,7 +85,7 @@ module.exports = (io) => {
       }
       if (fieldName === 'Student ID') {
         try {
-          let student = await db.Student.findOne({ studentID: req.body[fieldName] })
+          let student = (await axios.get(`https://psi-uph-api.herokuapp.com/students/api/${req.params.studentID}`)).data
           newFormData['Student ID'] = student.studentID
           newFormData['Full Name'] = student.name
           newFormData['Study Program'] = student.studyProgram

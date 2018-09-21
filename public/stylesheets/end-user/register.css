@@ -23,7 +23,7 @@ header .btn {
 }
 
 .section-price-free {
-  background: rgb(50, 184, 233);
+  background: lightgreen;
   background-size: cover;
   -o-background-size: cover;
   -moz-background-size: cover;
@@ -32,7 +32,7 @@ header .btn {
 }
 
 .section-title {
-  background: rgb(226, 153, 69) !important;
+  background: rgb(50, 184, 233) !important;
   background-size: cover;
   -o-background-size: cover;
   -moz-background-size: cover;

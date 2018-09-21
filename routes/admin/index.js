@@ -88,7 +88,7 @@ router.put('/event/:id/image', authMW.isLoggedIn, upload.single('image'), async 
   let id = req.params.id
   try {
     let event = await db.Event.findById(id)
-    await cloudinary.uploader.destroy(event.mainImage.public_id)
+    cloudinary.uploader.destroy(event.mainImage.public_id)
     let uploadResult = await cloudinary.uploader.upload(req.file.path)
     event.mainImage.public_id = uploadResult.public_id
     event.mainImage.secure_url = uploadResult.secure_url
