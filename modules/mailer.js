@@ -63,9 +63,10 @@ function composeEmail(options) {
         <section style="max-width: 480px; margin:0 auto; padding:0; box-sizing: border-box; border-style:inset;">
             <header style="background-color: rgb(9, 228, 9) ; text-align: center; padding: 12px 0;" >${options.event.name}</header>
             <div class="row" style="border-style: solid; border-width:thin;  ">
-                <h1 style="text-align: center">Status : <span style="color:blue;">WAITING FOR PAYMENT</span></h1>
-                <strong><p style="text-align: center">Description : Please pay Rp. ${options.form.price.toLocaleString()} before ${moment(options.event.paymentDate).format('dddd, Do MMMM YYYY [at] HH:mm')} to ensure your
-                participation</p></strong>
+              <h1 style="text-align: center">Status : <span style="color:blue;">WAITING FOR PAYMENT</span></h1>
+              <strong><p style="text-align: center">
+                Description : Please pay Rp. ${options.form.price.toLocaleString()} maximum of 2 x 24 hours from now or the transaction is automatically cancelled.
+              </p></strong>
             </div>
             <div class="row" style="border-style: solid; border-width: thin; ">
               <u><h1 style="text-align: center">Student Detail</h1></u>
@@ -132,7 +133,7 @@ function composeEmail(options) {
               </p>
             </div>
         </section>
-    </div>
+      </div>
     `
   } else if (options.form.status === 'REJECTED') { 
     return `

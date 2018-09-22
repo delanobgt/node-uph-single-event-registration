@@ -25,7 +25,9 @@
           <% if (price === -1) { %>
             <p>Please wait for our admin's confirmation</p>
           <% } else { %>
-            <p>Please pay Rp. <%= price.toLocaleString() %> before <%= moment(event.paymentDate).format('dddd, Do MMMM YYYY [at] HH:mm') %></p>
+            <p>
+              Please pay Rp. <%= price.toLocaleString() %> maximum of 2 x 24 hours from now or the transaction is automatically cancelled.
+            </p>
           <% } %>
           
           <p>We have sent your ticker order detail to your email</p>
