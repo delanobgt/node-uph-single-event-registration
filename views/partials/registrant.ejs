@@ -14,7 +14,8 @@
 
   <form id="form_registrant" class="col s12" method="POST">
     <div class="">
-      <div class="row right">
+      <div class="row right-align">
+        <button id="btn_refresh" type="button" class="waves-effect waves-light lightblue btn"><i class="material-icons right">refresh</i>REFRESH</button>
         <button id="btn_delete" type="button" class="waves-effect waves-light red btn"><i class="material-icons right">delete</i>DELETE ALL</button>
       </div>
       <h6 id="info_no_data" class="center-align" style="display:none;">No data yet.</h6>
@@ -193,6 +194,10 @@
 
     $(document).ready(async function () {
       await initTable('#table')
+
+      $('#btn_refresh').click(function () {
+        window.location.reload(true)
+      })
 
       $('#btn_delete').click(async function () {
         let deleteResp = prompt('Type "I am" without quotes (1/3)')
