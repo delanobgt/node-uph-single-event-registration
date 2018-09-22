@@ -37,7 +37,8 @@ header .btn {
   -o-background-size: cover;
   -moz-background-size: cover;
   -webkit-background-size: cover;
-  height: 100vh;
+  padding-top: 2em;
+  padding-bottom: 2em;
   background-position: center;
 }
 
