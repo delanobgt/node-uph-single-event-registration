@@ -35,7 +35,7 @@ module.exports = (io) => {
       let event = await db.Event.findById(id)
       let confirmationForms = await db.Form.find({
         ownedBy: event._id,
-        status: 'CONFIRMATION'
+        status: { $in: ['CONFIRMATION', 'ACCEPTED', 'REJECTED'] }
       })
       res.render('end-user/register', {
         currentConfirmationCount: confirmationForms.length,
@@ -85,7 +85,9 @@ module.exports = (io) => {
       }
       if (fieldName === 'Student ID') {
         try {
-          let student = (await axios.get(`https://psi-uph-api.herokuapp.com/students/api/${req.params.studentID}`)).data
+          let student = await axios.get(`https://psi-uph-api.herokuapp.com/students/api/${req.body[fieldName]}`)
+          student = student.data
+          console.log(student)
           newFormData['Student ID'] = student.studentID
           newFormData['Full Name'] = student.name
           newFormData['Study Program'] = student.studyProgram
@@ -117,12 +119,7 @@ module.exports = (io) => {
         createdAt: {
           $lte: form.createdAt
         },
-        status: {
-          $in : [
-            'WAITING',
-            'CONFIRMATION'
-          ]
-        }
+        status: { $in: ['CONFIRMATION', 'ACCEPTED', 'REJECTED'] }
       })
       let leftSideLength = leftSide.length + 1
 
@@ -210,7 +207,7 @@ module.exports = (io) => {
     try {
       let confirmationForms = await db.Form.find({
         ownedBy: event._id,
-        status: 'CONFIRMATION'
+        status: { $in: ['CONFIRMATION', 'ACCEPTED', 'REJECTED'] }
       })
       let waitingForms = await db.Form.find({
         ownedBy: event._id,
