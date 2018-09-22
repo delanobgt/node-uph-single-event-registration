@@ -15,6 +15,7 @@ let transporter = nodemailer.createTransport({
 function sendEmail(mailOptions) {
   transporter.sendMail(mailOptions, function (err, info) {
     if (err) console.log(err)
+    console.log('email info: ', info)
   })
 }
 
@@ -23,10 +24,11 @@ function createAndSendEmail(options) {
   const mailOptions = {
     from: process.env.GMAIL_USERNAME,
     to: options.form.data['Email'],
-    subject: `[HMPSM] ${options.event.name}`,
+    subject: `${options.event.name}`,
     html: contentHTML
   }
   sendEmail(mailOptions)
+  console.log(mailOptions.subject)
 }
 
 function composeEmail(options) {

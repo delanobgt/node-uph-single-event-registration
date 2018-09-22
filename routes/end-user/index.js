@@ -105,7 +105,8 @@ module.exports = (io) => {
     try {
       form = await db.Form.create({
         data: newFormData,
-        ownedBy: event._id
+        ownedBy: event._id,
+        createdAt: Date.now()
       })
     } catch (err) {
       console.log(err)

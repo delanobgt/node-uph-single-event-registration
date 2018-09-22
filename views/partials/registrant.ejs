@@ -13,7 +13,7 @@
   </style>
 
   <form id="form_registrant" class="col s12" method="POST">
-    <div class="container">
+    <div class="">
       <div class="row right">
         <button id="btn_delete" type="button" class="waves-effect waves-light red btn"><i class="material-icons right">delete</i>DELETE ALL</button>
       </div>
@@ -54,17 +54,19 @@
 
         // tableHeader and exportOptionsColumn
         let col = 0, exportOptionColumns = []
-        $table.find('tr').append($('<th>'))
+        $table.find('tr').append($('<th>')).append($('<th>'))
+        exportOptionColumns.push(col++)
         exportOptionColumns.push(col++)
         for (let key of Object.keys(forms[0].data)) {
           $table.find('tr').append($('<th>'))
           exportOptionColumns.push(col++)
         }
-        $table.find('tr').append($('<th>')).append($('<th>')).append($('<th>'))
+        exportOptionColumns.push(col++)
+        $table.find('tr').append($('<th>')).append($('<th>')).append($('<th>')).append($('<th>'))
 
-        let formattedColumn = [{ title: 'No.' }]
+        let formattedColumn = [{ title: 'Ticket Order' }, { title: 'Registered at' }]
                                 .concat(Object.keys(forms[0].data).map(key => { return { title: key } }))
-                                .concat([ { title: '' }, { title: '' }, { title: '' }])
+                                .concat([ { title: 'Ticket Price' }, { title: '' }, { title: '' }, { title: '' }])
 
         let mappedIcons = {
           'check': {
@@ -84,8 +86,9 @@
           }
         }
         let formattedData = forms.map((form, index) => {
-          return [index + 1]
+          return [form.slotNumber, moment(form.createdAt).format('DD-MM-YYYY HH:mm:ss')]
                   .concat(Object.values(form.data))
+                  .concat([`Rp. ${formatIndo(form.price)}`])
                   .concat([
                     mappedIcons['check'][form.status],
                     mappedIcons['pending'][form.status],
@@ -211,5 +214,12 @@
         }
       })
     })
+
+    function formatIndo(num) {
+      return num.toLocaleString('us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).replace(/,/g, '#').replace(/\./g, ',').replace(/#/g, '.')
+    }
   </script>
 </div>

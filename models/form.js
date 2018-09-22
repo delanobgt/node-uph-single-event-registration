@@ -8,7 +8,7 @@ let FormSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: new Date()
   },
   status: {
     type: String,
