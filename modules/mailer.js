@@ -65,7 +65,7 @@ function composeEmail(options) {
             <div class="row" style="border-style: solid; border-width:thin;  ">
               <h1 style="text-align: center">Status : <span style="color:blue;">WAITING FOR PAYMENT</span></h1>
               <strong><p style="text-align: center">
-                Description : Please pay Rp. ${options.form.price.toLocaleString()} maximum of 2 x 24 hours from now or the transaction is automatically cancelled.
+                Description : Please pay Rp. ${options.form.price.toLocaleString()} maximum of 2 x 24 hours from now or this reservation will automatically be cancelled
               </p></strong>
             </div>
             <div class="row" style="border-style: solid; border-width: thin; ">
@@ -80,6 +80,12 @@ function composeEmail(options) {
                 Study Program : ${options.form.data['Study Program']}
               </p>
             </div>
+            <p>
+              * Payment should be done via transfer to <span style="background:pink;">BANK NOBU (Nobu – 80110038051 Velya Laurencia Hanl)</span>
+            </p>
+            <p>
+              * Please note that you should send your transfer receipt to our official line account : <span style="background:lightgreen;">@gjo9345r</span>
+            </p>
         </section>
       </div>
       `

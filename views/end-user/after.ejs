@@ -26,11 +26,17 @@
             <p>Please wait for our admin's confirmation</p>
           <% } else { %>
             <p>
-              Please pay Rp. <%= price.toLocaleString() %> maximum of 2 x 24 hours from now or the transaction is automatically cancelled.
+              Please pay Rp. <%= price.toLocaleString() %> maximum of 2 x 24 hours from now or this reservation will automatically be cancelled
+            </p>
+            <p>
+              Payment should be done via transfer to <span class="red">BANK NOBU (Nobu – 80110038051 Velya Laurencia Hanl)</span>
+            </p>
+            <p>
+              Please note that you should send your transfer receipt to our official line account : <span class="light-green lighten-1">@gjo9345r</span>
             </p>
           <% } %>
           
-          <p>We have sent your ticker order detail to your email</p>
+          <p>**We have sent your ticker order detail to your email**</p>
         </div>
       <% } else if (status === 'WAITING') { %>
         <div class="signtextbox">

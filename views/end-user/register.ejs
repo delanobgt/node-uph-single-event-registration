@@ -356,11 +356,11 @@
       ms = ms % 1000
 
       if (!type || type === 'form') {
-        return `${days} days, ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until opening`
+        return `${days} day(s), ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until opening`
       } else if (type === 'banner-open') {
-        return `${days} days, ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until opening`
+        return `${days} day(s), ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until opening`
       } else if (type === 'banner-close') {
-        return `${days} days, ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until closing `
+        return `${days} day(s), ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} until closing `
       }
     }
 
