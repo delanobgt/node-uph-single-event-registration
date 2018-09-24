@@ -65,7 +65,7 @@ function composeEmail(options) {
             <div class="row" style="border-style: solid; border-width:thin;  ">
               <h1 style="text-align: center">Status : <span style="color:blue;">WAITING FOR PAYMENT</span></h1>
               <strong><p style="text-align: center">
-                Description : Please pay Rp. ${options.form.price.toLocaleString()} maximum of 2 x 24 hours from now or this reservation will automatically be cancelled
+                Description : Please pay <span style="background-color:lightblue;">Rp. ${options.form.price.toLocaleString()}</span> maximum of 2 x 24 hours from now or this reservation will automatically be cancelled
               </p></strong>
             </div>
             <div class="row" style="border-style: solid; border-width: thin; ">
