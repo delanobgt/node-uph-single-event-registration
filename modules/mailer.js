@@ -84,7 +84,7 @@ function composeEmail(options) {
               * Payment should be done via transfer to <span style="background:pink;">BANK NOBU (Nobu – 80110038051 Velya Laurencia Hanl)</span>
             </p>
             <p>
-              * Please note that you should send your transfer receipt to our official line account : <span style="background:lightgreen;">@velyalh</span>
+              * Please note that you should send your transfer receipt to Line account, Line ID: <span style="background:lightgreen;">velyalh</span>
             </p>
         </section>
       </div>
